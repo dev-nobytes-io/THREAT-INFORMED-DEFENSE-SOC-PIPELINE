@@ -63,15 +63,44 @@
 
 ## Pairwise Integration Details
 
-### ATT&CK ↔ OSSEM
+### ATT&CK ↔ OSSEM (DD + CDM + DM)
 
 | Integration Point | Direction | Mechanism |
 |---|---|---|
-| Data Sources | ATT&CK → OSSEM | ATT&CK Data Sources (DS) specify what telemetry is needed; OSSEM provides field-level documentation |
-| Data Components | ATT&CK → OSSEM | ATT&CK Data Components (e.g., "Process Creation") map to OSSEM CIM entities |
-| Technique Coverage | OSSEM → ATT&CK | OSSEM data quality determines which techniques are detectable |
+| Data Sources | ATT&CK → OSSEM-DD | ATT&CK Data Sources (DS) specify what telemetry is needed; OSSEM-DD provides per-event field documentation |
+| Data Components | ATT&CK → OSSEM-DM | ATT&CK Data Components (e.g., "Process Creation") map to OSSEM-DM entity relationships (e.g., `Process created Process`) |
+| Field Normalisation | OSSEM-CDM → Analytics | OSSEM-CDM `{prefix}_{attribute}` naming convention provides standardised field names for all detection queries |
+| Entity Relationships | OSSEM-DM → ATT&CK | OSSEM-DM relationship definitions were adopted into ATT&CK as the Data Component concept |
+| Technique Coverage | OSSEM-DM → ATT&CK | `techniques_to_events_mapping.yaml` traces each ATT&CK technique through Data Source → Data Component → Relationship → Security Event |
+| Data Quality | OSSEM-CDM → ATT&CK | CDM normalisation quality determines which techniques are reliably detectable |
 
-**Practical use:** When Module 03 identifies T1059.001 as priority, look up ATT&CK Data Source DS0009 (Process) → map to OSSEM CIM `process` entity → verify Sysmon EventID 1 fields are documented and quality-scored in Module 02.
+**Practical use:** When Module 03 identifies T1059.001 as priority:
+1. Look up ATT&CK Data Source DS0009 (Process) → Data Component "Process Creation"
+2. Map to OSSEM-DM relationship: `Process created Process`
+3. Identify required events: Sysmon Event 1, Security 4688
+4. Map to OSSEM-CDM fields: `process_name`, `process_command_line`, `process_parent_name`
+5. Verify fields are documented (OSSEM-DD) and quality-scored (Module 02) at ≥ 4
+
+---
+
+### OSSEM-CDM ↔ OSSEM-DM
+
+| Integration Point | Direction | Mechanism |
+|---|---|---|
+| Entity Definitions | CDM → DM | DM relationships reference CDM entity types (process, file, user, etc.) |
+| Field Names | CDM → DM → Analytics | CDM `{prefix}_{attribute}` names are the fields used in relationship-based analytics |
+| Schema Tables | CDM → SIEM | CDM schema tables define the normalised tables that DM relationships query against |
+
+---
+
+### OSSEM-CDM ↔ SIEM Platforms
+
+| Integration Point | Direction | Mechanism |
+|---|---|---|
+| Splunk CIM | CDM → Splunk | CDM field names map to Splunk CIM via `props.conf` field aliases |
+| Elastic ECS | CDM → Elastic | Elastic Common Schema aligns with CDM entity/attribute structure |
+| Microsoft Sentinel ASIM | CDM → Sentinel | Advanced Security Information Model natively aligns with OSSEM CDM |
+| Chronicle UDM | CDM → Chronicle | Unified Data Model field mappings from CDM conventions |
 
 ---
 
@@ -152,9 +181,12 @@
 |---|---|---|
 | NIST CSF 2.0 | All modules | Governance categories, risk context, authority |
 | ASD CSF / DoDCWF | Module 01, HR | Workforce roles, skill requirements, training needs |
-| OSSEM | Module 04 (CAR, DeTTECT, Sigma) | Normalized field names, data quality context |
-| ATT&CK | Modules 03-07 | Technique IDs, group profiles, data sources |
-| Threat Hunters Playbook | Modules 02, 04 | Data requirements, hunt hypotheses, analytics templates |
+| OSSEM-DD | Module 02 | Per-event field documentation (data dictionaries) |
+| OSSEM-CDM | Modules 02, 04 | Normalised field names (`{prefix}_{attribute}`), schema tables for SIEM parsing |
+| OSSEM-DM | Modules 02, 03, 04, 05 | Entity relationships, ATT&CK data component mappings, techniques-to-events mapping |
+| ATT&CK | Modules 03-07 | Technique IDs, group profiles, data sources, data components |
+| Threat Hunters Playbook | Modules 02, 04 | Four data management disciplines, hunt hypotheses, analytics templates, data requirements |
+| Security Datasets (Mordor) | Modules 02, 07 | Pre-recorded security events for CDM validation and detection testing |
 | DeTTECT | Modules 04, 06, 07 | Coverage scores, gap analysis, Navigator layers |
 | MITRE CAR | Module 04 | Pre-built analytics, query templates |
 | Atomic Red Team | Modules 04, 07 | Test procedures, validation results |
@@ -174,5 +206,8 @@
 | atomic-operator (Python) | `pip install atomic-operator` | Cross-platform technique testing |
 | attack_range | `git clone` + `pip install -r requirements.txt` | Full lab provisioning |
 | ATT&CK Navigator | Web-based or `git clone` | Technique visualization |
-| OSSEM | Reference (GitHub) | Data source documentation |
-| Threat Hunters Playbook | Reference (GitHub) | Hunt playbooks and data requirements |
+| OSSEM-DD | Reference ([GitHub](https://github.com/OTRF/OSSEM-DD)) | Per-event data dictionaries |
+| OSSEM-CDM | Reference ([GitHub](https://github.com/OTRF/OSSEM-CDM)) | Common Data Model — entity schemas, field naming, schema tables |
+| OSSEM-DM | Reference ([GitHub](https://github.com/OTRF/OSSEM-DM)) | Detection Model — entity relationships, ATT&CK data component mapping |
+| Threat Hunters Playbook | Reference ([GitHub](https://github.com/OTRF/ThreatHunter-Playbook)) | Hunt playbooks, data management methodology, analytics templates |
+| Security Datasets | Reference ([GitHub](https://github.com/OTRF/Security-Datasets)) | Pre-recorded security events for validation |

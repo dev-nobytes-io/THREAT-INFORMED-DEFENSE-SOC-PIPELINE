@@ -35,11 +35,11 @@ This maturity model maps across all seven pipeline modules, providing a structur
 
 | Level | Criteria |
 |---|---|
-| 1 | Logs collected but not inventoried; no standard naming |
-| 2 | Data source inventory exists; basic field documentation |
-| 3 | OSSEM CIM applied to all sources; data quality scored; Threat Hunters Playbook data requirements mapped |
-| 4 | Data quality monitored continuously; gaps auto-detected; onboarding SLAs for new sources |
-| 5 | Self-healing data pipelines; automated quality remediation; data source coverage auto-maps to ATT&CK |
+| 1 | Logs collected but not inventoried; no standard naming; raw vendor field names used in queries |
+| 2 | Data source inventory exists; OSSEM-DD data dictionaries created for primary sources; basic field documentation |
+| 3 | **Standardisation:** OSSEM-CDM `{prefix}_{attribute}` naming applied to all priority sources; SIEM parsing normalises at ingest. **Modelling:** Entity relationships documented for top 20 ATT&CK techniques; OSSEM-DM `Source→Verb→Target` patterns mapped. **Quality:** Data quality scored; Threat Hunters Playbook data requirements mapped; hunt-readiness scores calculated |
+| 4 | Data quality monitored continuously across completeness/consistency/timeliness dimensions; CDM normalisation validated via cross-source queries; entity relationship gaps auto-detected; onboarding SLAs for new sources; techniques-to-events mapping maintained |
+| 5 | Self-healing data pipelines; automated quality remediation; new data sources auto-standardised to CDM; entity relationships auto-discovered from telemetry; data source and relationship coverage auto-maps to ATT&CK |
 
 ### 03 — Threat Intelligence
 
