@@ -1,6 +1,8 @@
 # Tool Integration Matrix
 
 > How all frameworks and tools in this pipeline interconnect
+>
+> **Organising Frameworks:** SOC-CMM (maturity assessment), M3TID (continuous hunt cycle)
 
 ---
 
@@ -175,6 +177,34 @@
 
 ---
 
+### SOC-CMM ↔ All Pipeline Modules
+
+| Integration Point | Direction | Mechanism |
+|---|---|---|
+| Maturity Assessment | SOC-CMM → All modules | Five-domain assessment (Business, People, Process, Technology, Services) identifies gaps across the entire pipeline |
+| Improvement Prioritisation | SOC-CMM → Roadmap | Domain scores determine which pipeline modules need investment; Business and People gaps addressed before Technology |
+| Service Evaluation | SOC-CMM Services → Modules 03-07 | Services domain aspects map directly to pipeline module outputs (monitoring, IR, CTI, hunting, testing) |
+| People Evaluation | SOC-CMM People → Workforce Roles | People domain aspects map to DoDCWF/ASD/CIISec three-framework workforce assessment |
+| Quarterly Review | SOC-CMM ↔ All modules | SOC-CMM assessment drives quarterly maturity review and sprint planning |
+
+---
+
+### M3TID ↔ Pipeline Modules
+
+| Integration Point | Direction | Mechanism |
+|---|---|---|
+| Analyse Threats | M3TID → Module 03 | CTI-driven threat profiling produces ATT&CK-mapped composite threat profile |
+| Assess Defenses | M3TID → Modules 04, 07 | DeTTECT coverage scoring and Atomic RT validation assess current defensive posture |
+| Identify Gaps | M3TID → Modules 02, 04, 06 | Coverage gaps, data gaps, and process gaps identified through continuous assessment |
+| Improve Defenses | M3TID → Modules 04, 05, 06 | New detections, playbooks, and countermeasures deployed to close gaps |
+| Share Findings | M3TID → Module 01, External | Community sharing via ISACs, peer collaboration, open-source contributions |
+| Pre-Hunt Data Mgmt | M3TID/THP → Module 02 | Four data management disciplines (DD, CDM, DM, Quality) provide the data foundation |
+| Hypothesis Generation | M3TID/THP → Module 03 | Intelligence, situational, and analytics-driven hunt hypotheses generated from threat profile |
+| Analytics Development | M3TID/THP → Module 04 | Hunt queries promoted to validated analytics then to production detections via CI/CD |
+| Continuous Hunt | M3TID → All modules | The everlasting baseline hunt — explicit (analyst) and implicit (automated detections) running continuously |
+
+---
+
 ## Data Flow Summary
 
 | From | To | What Flows |
@@ -193,6 +223,9 @@
 | attack_range | Module 07 | Lab infrastructure, scenario simulation, Splunk data |
 | RE&CT | Module 05 | Response action taxonomy, playbook structure |
 | D3FEND | Module 06 | Defensive technique mappings, countermeasure specifications |
+| SOC-CMM | All modules | Five-domain maturity assessment; improvement prioritisation; quarterly review cycle |
+| M3TID / THP Pre-Hunt | Modules 02, 03, 04 | Continuous hunt cycle; six pre-hunt activities; hypothesis generation; hunt-to-detection pipeline |
+| CIISec Skills Framework | Module 01, Workforce Roles | Specialism-based capability differentiation complementing ASD skill streams |
 
 ---
 
@@ -211,3 +244,6 @@
 | OSSEM-DM | Reference ([GitHub](https://github.com/OTRF/OSSEM-DM)) | Detection Model — entity relationships, ATT&CK data component mapping |
 | Threat Hunters Playbook | Reference ([GitHub](https://github.com/OTRF/ThreatHunter-Playbook)) | Hunt playbooks, data management methodology, analytics templates |
 | Security Datasets | Reference ([GitHub](https://github.com/OTRF/Security-Datasets)) | Pre-recorded security events for validation |
+| SOC-CMM | Reference ([soc-cmm.com](https://www.soc-cmm.com)) | SOC maturity assessment — five-domain self-assessment framework |
+| M3TID / CTID | Reference ([ctid.mitre-engenuity.org](https://ctid.mitre-engenuity.org/)) | Methodology for Threat-Informed Defense — continuous improvement cycle |
+| CIISec Skills Framework | Reference ([ciisec.org](https://www.ciisec.org/skills-framework)) | Specialism-based cybersecurity workforce capability assessment |
