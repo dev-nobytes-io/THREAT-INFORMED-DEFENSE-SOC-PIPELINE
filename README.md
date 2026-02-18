@@ -60,7 +60,7 @@ Each pipeline module maps to one or more of the MITRE 11 Strategies for a World-
 | 2 | **Give the SOC the Authority to Do Its Job** | [01-Governance](01-Governance/) | NIST CSF 2.0 (GV), ASD Cyber Skills Framework |
 | 3 | **Build a SOC Structure to Match Your Organizational Needs** | [01-Governance](01-Governance/) | ASD CSF, DoDCWF 8140, CIISec |
 | 4 | **Hire AND Grow Quality Staff** | [01-Governance](01-Governance/) | ASD CSF, DoDCWF 8140, CIISec Skills Framework |
-| 5 | **Prioritize Incident Response** | [05-Incident-Response](05-Incident-Response/) | RE&CT Framework |
+| 5 | **Prioritize Incident Response** | [05-Incident-Response](05-Incident-Response/), [08-Forensics-DFIR](08-Forensics-DFIR/) | RE&CT Framework, DFIR Toolchain |
 | 6 | **Illuminate Adversaries with Cyber Threat Intelligence** | [03-Threat-Intelligence](03-Threat-Intelligence/) | MITRE ATT&CK, M3TID |
 | 7 | **Select and Collect the Right Data** | [02-Data-Documentation](02-Data-Documentation/) | OSSEM (DD, CDM, DM), Threat Hunters Playbook |
 | 8 | **Leverage Tools to Support Analyst Workflow** | [04-Detection-Engineering](04-Detection-Engineering/) | DeTTECT, MITRE CAR, Sigma |
@@ -81,6 +81,7 @@ Each pipeline module maps to one or more of the MITRE 11 Strategies for a World-
 | [05-Incident-Response](05-Incident-Response/) | **Activation** — executes when a codified hunt (detection) fires | RE&CT Framework |
 | [06-Countermeasures](06-Countermeasures/) | **Hardening** — prevents techniques that can't be hunted/detected reliably | MITRE D3FEND |
 | [07-Detection-Testing](07-Detection-Testing/) | **Validation** — verifies codified hunts (detections) still work | Atomic Red Team, attack_range |
+| [08-Forensics-DFIR](08-Forensics-DFIR/) | **Evidence** — ground-truth artefacts that confirm adversary presence and generate new hunt leads | Velociraptor, Volatility 3, Plaso, Autopsy |
 
 ---
 
@@ -170,6 +171,7 @@ Phase 2: Standardise (SOC-CMM Level 2 → 3 — maximum pipeline value)
 Phase 3: Harden & Validate (SOC-CMM Level 3 solidified)
 ├── 06-Countermeasures → Map and deploy D3FEND defensive techniques
 ├── 07-Testing         → Validate detection coverage with Atomic RT
+├── 08-Forensics       → Establish forensic readiness and DFIR capability
 └── SOC-CMM Assessment → Baseline all five domains
 
 Phase 4: Continuous Hunt (SOC-CMM Level 3 → 4+)
@@ -222,12 +224,16 @@ THREAT-INFORMED-DEFENSE-SOC-PIPELINE/
 │   └── README.md                          # MITRE D3FEND
 ├── 07-Detection-Testing/
 │   └── README.md                          # Atomic Red Team, attack_range
+├── 08-Forensics-DFIR/
+│   └── README.md                          # DFIR capability areas, tool options, artefact reference
 └── references/
     ├── soc-cmm.md                         # SOC-CMM — full framework, 5 domains, assessment
     ├── maturity-model.md                  # SOC-CMM-based maturity progression per module
     ├── m3tid-continuous-hunt.md            # M3TID + pre-hunt methodology + continuous hunt
     ├── workforce-roles.md                 # DoDCWF, ASD, CIISec role mapping
-    └── tool-integration-matrix.md         # Framework interoperability guide
+    ├── tool-integration-matrix.md         # Tool options matrix — curated OSS tools per capability
+    ├── metrics.md                         # KPIs, KRIs, SOC-CMM self-assessment scorecard
+    └── agentic-soc.md                     # Human-AI operating model — 6 SOC agents
 ```
 
 ---

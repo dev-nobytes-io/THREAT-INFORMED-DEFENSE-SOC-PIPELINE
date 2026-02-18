@@ -109,6 +109,18 @@ Each pipeline module is assessed against the relevant SOC-CMM domains. The crite
 | 4 | Weekly automated smoke tests; CI/CD detection validation; coverage dashboard drives decisions; KPIs baselined and trending; continuous hunt validation |
 | 5 | Continuous automated testing pipeline; detection regressions caught in CI; predictive gap analysis; red team on staff; testing integrated into every detection deployment |
 
+### 08 — Forensics & DFIR
+
+**SOC-CMM Domains:** Services (Forensics & Investigation), Process (Procedures), Technology (Testing Infrastructure)
+
+| Level | Criteria |
+|---|---|
+| 1 | No forensic capability; evidence destroyed during incident response; ad-hoc tool usage |
+| 2 | Basic disk imaging capability; some artefact parsing; incident-driven only; one trained analyst |
+| 3 | Full acquisition capability (memory + disk + triage); chain of custody enforced; artefact parsing with standard tools (EZ Tools, Hayabusa); forensic findings feed back to Modules 03, 04, 07; pre-collection readiness achieved; forensic SOPs documented |
+| 4 | Enterprise-scale triage (Velociraptor/GRR fleet-wide); automated artefact parsing and timeline generation (Plaso, Timesketch); forensic case management (DFIR-IRIS); all findings systematically ATT&CK-mapped; tool validation program; legal coordination tested |
+| 5 | Predictive forensic readiness based on threat landscape; automated evidence collection triggered by high-confidence detections; forensic-as-code (automated analysis pipelines); community sharing of forensic intelligence |
+
 ---
 
 ## SOC-CMM Domain Summary Assessment
@@ -132,6 +144,7 @@ This template provides the cross-cutting SOC-CMM view alongside the per-module v
 | 05 Incident Response | [0-5] | [0-5] | [delta] | [specific actions] |
 | 06 Countermeasures | [0-5] | [0-5] | [delta] | [specific actions] |
 | 07 Detection Testing | [0-5] | [0-5] | [delta] | [specific actions] |
+| 08 Forensics & DFIR | [0-5] | [0-5] | [delta] | [specific actions] |
 
 ### SOC-CMM Domain View
 
@@ -139,7 +152,7 @@ This template provides the cross-cutting SOC-CMM view alongside the per-module v
 |---|---|---|---|---|
 | Business | [0-5] | [0-5] | [delta] | 01 |
 | People | [0-5] | [0-5] | [delta] | 01, Workforce Roles |
-| Process | [0-5] | [0-5] | [delta] | 03, 04, 05, 07 |
+| Process | [0-5] | [0-5] | [delta] | 03, 04, 05, 07, 08 |
 | Technology | [0-5] | [0-5] | [delta] | 02, 04, 07 |
 | Services | [0-5] | [0-5] | [delta] | All |
 
@@ -174,7 +187,7 @@ This pipeline supports two complementary assessment perspectives:
 
 | Perspective | Framework | View | When to Use |
 |---|---|---|---|
-| **Module View** | Pipeline-specific criteria | Vertical — per pipeline module (Governance, Data, Intel, Detection, IR, Countermeasures, Testing) | For operational improvement planning — identifies which module needs investment next |
+| **Module View** | Pipeline-specific criteria | Vertical — per pipeline module (Governance, Data, Intel, Detection, IR, Countermeasures, Testing, Forensics) | For operational improvement planning — identifies which module needs investment next |
 | **Domain View** | SOC-CMM | Horizontal — per SOC-CMM domain (Business, People, Process, Technology, Services) | For holistic capability assessment — ensures no domain is neglected |
 
 **Both views should be assessed quarterly.** The module view drives operational sprint planning. The domain view drives strategic investment and organisational change.

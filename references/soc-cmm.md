@@ -324,7 +324,7 @@ The Services domain evaluates the operational services the SOC delivers. This is
 | Services | Threat Intelligence | 03 Threat Intel | — |
 | Services | Threat Hunting | M3TID Continuous Hunt | 02, 03, 04 |
 | Services | Vulnerability Management | 06 Countermeasures | — |
-| Services | Forensics & Investigation | 05 Incident Response | — |
+| Services | Forensics & Investigation | 08 Forensics & DFIR | 05 Incident Response |
 | Services | Advisory & Reporting | 01 Governance | 07 Testing |
 | Services | Detection Testing | 07 Detection Testing | — |
 
