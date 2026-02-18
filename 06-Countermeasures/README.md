@@ -234,15 +234,29 @@ D3FEND's **Deceive** category enables active defense — making the adversary's 
 
 ---
 
+## Inputs
+
+| Input | Source Module | Description |
+|---|---|---|
+| Detection Gap Analysis | [04 Detection Engineering](../04-Detection-Engineering/) | DeTTECT low-score techniques — prime candidates for preventive countermeasures |
+| Prioritised Technique List | [03 Threat Intelligence](../03-Threat-Intelligence/) | ATT&CK threat profile driving countermeasure prioritisation |
+| Test Results (Block Validation) | [07 Detection Testing](../07-Detection-Testing/) | Atomic RT results verifying countermeasure effectiveness |
+| Gap Remediation Tickets | [07 Detection Testing](../07-Detection-Testing/) | Failed detection tests where countermeasures may be the better mitigation |
+| Incident Lessons Learned | [05 Incident Response](../05-Incident-Response/) | Techniques that succeeded against the environment — hardening candidates |
+| Forensic Findings | [08 Forensics & DFIR](../08-Forensics-DFIR/) | Confirmed adversary techniques requiring preventive controls |
+
+---
+
 ## Outputs
 
 | Output | Consumers | Description |
 |---|---|---|
-| ATT&CK-to-D3FEND Mapping | Module 01 (Governance), Module 04 (Detection) | Technique-to-countermeasure matrix |
+| ATT&CK-to-D3FEND Mapping | [01 Governance](../01-Governance/), [04 Detection Eng](../04-Detection-Engineering/) | Technique-to-countermeasure matrix |
 | Countermeasure Implementation Plans | IT Operations, Security Engineering | Detailed deployment guides per countermeasure |
-| Countermeasure Validation Results | Module 07 (Testing) | Atomic test results showing blocked techniques |
+| Countermeasure Validation Results | [07 Detection Testing](../07-Detection-Testing/) | Atomic test results showing blocked techniques |
 | Active Defense Deployment Plan | SOC, Security Engineering | Deception layer implementation |
-| Defense-in-Depth Coverage Map | Module 01 (Governance) | Kill chain coverage by countermeasure layer |
+| Defense-in-Depth Coverage Map | [01 Governance](../01-Governance/) | Kill chain coverage by countermeasure layer |
+| Countermeasure Status | [05 Incident Response](../05-Incident-Response/) | Deployed controls informing IR containment and eradication decisions |
 
 ---
 

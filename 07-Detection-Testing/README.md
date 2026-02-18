@@ -383,15 +383,29 @@ jobs:
 
 ---
 
+## Inputs
+
+| Input | Source Module | Description |
+|---|---|---|
+| Detection Analytics (Sigma Rules) | [04 Detection Engineering](../04-Detection-Engineering/) | Deployed detection rules to validate via Atomic testing |
+| DeTTECT Coverage Layers | [04 Detection Engineering](../04-Detection-Engineering/) | Current detection scores to validate and update |
+| Prioritised Technique List | [03 Threat Intelligence](../03-Threat-Intelligence/) | ATT&CK techniques determining test scope and priority |
+| ATT&CK Navigator Layers | [03 Threat Intelligence](../03-Threat-Intelligence/) | Threat profile overlays for gap visualisation |
+| Countermeasure Deployments | [06 Countermeasures](../06-Countermeasures/) | D3FEND controls to validate via block-rate testing |
+| Data Source Inventory | [02 Data Documentation](../02-Data-Documentation/) | Telemetry availability determining what is testable |
+
+---
+
 ## Outputs
 
 | Output | Consumers | Description |
 |---|---|---|
-| Test Results Reports | Module 04 (Detection), Module 01 (Governance) | Per-technique pass/fail with evidence |
-| Updated DeTTECT Scores | Module 04 (Detection) | Validated detection quality scores |
-| Coverage Dashboard | Module 01 (Governance), CISO | Overall detection coverage metrics |
-| Gap Remediation Tickets | Module 04 (Detection), Module 06 (Countermeasures) | Action items for failed tests |
+| Test Results Reports | [04 Detection Eng](../04-Detection-Engineering/), [01 Governance](../01-Governance/) | Per-technique pass/fail with evidence |
+| Updated DeTTECT Scores | [04 Detection Engineering](../04-Detection-Engineering/) | Validated detection quality scores |
+| Coverage Dashboard | [01 Governance](../01-Governance/), CISO | Overall detection coverage metrics and KPIs |
+| Gap Remediation Tickets | [04 Detection Eng](../04-Detection-Engineering/), [06 Countermeasures](../06-Countermeasures/) | Action items for failed detection or countermeasure tests |
 | Purple Team Reports | All modules | Full exercise findings with ATT&CK mapping |
+| Feedback to Threat Profile | [03 Threat Intelligence](../03-Threat-Intelligence/) | Validated detection scores informing threat profile re-prioritisation |
 
 ---
 

@@ -378,6 +378,19 @@ Prioritise the upper-left quadrant: high detection value, lower collection cost.
 
 ---
 
+## Inputs
+
+| Input | Source Module | Description |
+|---|---|---|
+| Crown Jewel Asset Inventory | [01 Governance](../01-Governance/) | Prioritised asset list determining which systems require log collection |
+| SOC Charter & Scope | [01 Governance](../01-Governance/) | In-scope environments and data classification boundaries |
+| Data Source Requirements (ATT&CK) | [03 Threat Intelligence](../03-Threat-Intelligence/) | ATT&CK data sources required to detect priority techniques |
+| Detection Data Requirements | [04 Detection Engineering](../04-Detection-Engineering/) | Specific fields and event types required by Sigma rules and DeTTECT |
+| Data Source Gap Findings | [08 Forensics & DFIR](../08-Forensics-DFIR/) | Missing log sources discovered during forensic investigations |
+| Threat Hunters Playbook | External Framework | Data requirements per hunt hypothesis (OSSEM-DD/CDM/DM patterns) |
+
+---
+
 ## Outputs
 
 | Output | Consumers | Description |

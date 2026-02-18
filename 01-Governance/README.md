@@ -168,7 +168,23 @@ SOC Manager             │ CISSP, CISM                    │ Module 01
 
 ---
 
-## Governance Outputs
+## Inputs
+
+| Input | Source Module | Description |
+|---|---|---|
+| Incident Reports (ATT&CK-mapped) | [05 Incident Response](../05-Incident-Response/) | Post-incident findings for risk register updates and governance reporting |
+| Lessons Learned | [05 Incident Response](../05-Incident-Response/) | Process improvement recommendations from incident reviews |
+| Coverage Dashboard & KPIs | [07 Detection Testing](../07-Detection-Testing/) | Detection coverage metrics, MTTD, test pass rates for executive reporting |
+| Detection Gap Analysis | [04 Detection Engineering](../04-Detection-Engineering/) | Uncovered technique list for risk-based investment decisions |
+| SOC-CMM Assessment Scores | [references/soc-cmm.md](../references/soc-cmm.md) | Five-domain maturity scores driving strategy and budget |
+| Forensic Readiness Reports | [08 Forensics & DFIR](../08-Forensics-DFIR/) | Evidence collection readiness status and improvement needs |
+| Data Gap Analysis | [02 Data Documentation](../02-Data-Documentation/) | Missing data sources mapped to ATT&CK techniques requiring investment |
+| Intelligence Products | [03 Threat Intelligence](../03-Threat-Intelligence/) | Threat landscape updates for stakeholder communication |
+| Metric Trends | [references/metrics.md](../references/metrics.md) | KPI/KRI trends for executive dashboard and board reporting |
+
+---
+
+## Outputs
 
 This module produces the following artifacts that feed downstream modules:
 

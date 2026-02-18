@@ -369,6 +369,23 @@ detections/
 
 ---
 
+## Inputs
+
+| Input | Source Module | Description |
+|---|---|---|
+| OSSEM-CDM Mappings | [02 Data Documentation](../02-Data-Documentation/) | Normalised field names for writing portable detection queries |
+| OSSEM-DM Relationship Map | [02 Data Documentation](../02-Data-Documentation/) | Entity relationship definitions (Source→Verb→Target) for detection logic |
+| Data Quality Scorecards | [02 Data Documentation](../02-Data-Documentation/) | Quality ratings determining which data sources are production-ready for detections |
+| Prioritised Technique List | [03 Threat Intelligence](../03-Threat-Intelligence/) | ATT&CK techniques ranked by threat frequency, impact, and feasibility |
+| ATT&CK Navigator Layers | [03 Threat Intelligence](../03-Threat-Intelligence/) | Visual threat profile heat maps for coverage gap identification |
+| Gap Remediation Tickets | [07 Detection Testing](../07-Detection-Testing/) | Failed detection tests requiring rule fixes or new detections |
+| Updated DeTTECT Scores | [07 Detection Testing](../07-Detection-Testing/) | Validated detection scores from Atomic RT testing |
+| Detection Gap Findings | [08 Forensics & DFIR](../08-Forensics-DFIR/) | Techniques observed forensically that lacked detections |
+| Hunt Findings | M3TID Continuous Hunt | Proactive hunt discoveries requiring detection codification |
+| MITRE CAR Analytics | External Framework | Pre-built, peer-reviewed analytics mapped to ATT&CK |
+
+---
+
 ## Outputs
 
 | Output | Consumers | Description |

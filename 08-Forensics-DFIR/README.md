@@ -355,17 +355,30 @@ Forensic readiness ensures the SOC can collect evidence *before* an incident dem
 
 ---
 
+## Inputs
+
+| Input | Source Module | Description |
+|---|---|---|
+| Forensic Acquisition Requests | [05 Incident Response](../05-Incident-Response/) | IR escalation triggering evidence collection (scope, hosts, urgency) |
+| Detection Alert Context | [04 Detection Engineering](../04-Detection-Engineering/) | SIEM alert details providing initial investigation context |
+| Threat Profile & IOCs | [03 Threat Intelligence](../03-Threat-Intelligence/) | Known adversary TTPs and indicators guiding forensic analysis focus |
+| Data Source Inventory | [02 Data Documentation](../02-Data-Documentation/) | Available log sources informing what telemetry supports investigation |
+| SOC Charter (Legal Authority) | [01 Governance](../01-Governance/) | Legal authority for evidence collection and preservation |
+| Test Lab Evidence | [07 Detection Testing](../07-Detection-Testing/) | attack_range artefacts for forensic exercises and tool validation |
+
+---
+
 ## Outputs
 
 | Output | Consumers | Description |
 |---|---|---|
-| Forensic Investigation Reports | Module 05 (IR), Module 01 (Governance), Legal | Evidence-backed incident findings with ATT&CK mapping |
-| ATT&CK Technique Maps | Module 03 (Threat Intel) | Confirmed techniques from real incidents |
-| New Indicators of Compromise | Module 03 (Threat Intel), Module 04 (Detection) | IoCs extracted from forensic analysis |
-| Detection Gap Findings | Module 04 (Detection Engineering) | Techniques observed forensically that lacked detections |
-| Data Source Gap Findings | Module 02 (Data Documentation) | Missing log sources discovered during investigation |
-| Updated DeTTECT Scores | Module 04 (Detection Engineering) | Validated or corrected detection scores based on real incidents |
-| Forensic Readiness Reports | Module 01 (Governance) | Pre-collection readiness status and improvement needs |
+| Forensic Investigation Reports | [05 IR](../05-Incident-Response/), [01 Governance](../01-Governance/), Legal | Evidence-backed incident findings with ATT&CK mapping |
+| ATT&CK Technique Maps | [03 Threat Intel](../03-Threat-Intelligence/) | Confirmed techniques from real incidents |
+| New Indicators of Compromise | [03 Threat Intel](../03-Threat-Intelligence/), [04 Detection Eng](../04-Detection-Engineering/) | IoCs extracted from forensic analysis |
+| Detection Gap Findings | [04 Detection Engineering](../04-Detection-Engineering/) | Techniques observed forensically that lacked detections |
+| Data Source Gap Findings | [02 Data Documentation](../02-Data-Documentation/) | Missing log sources discovered during investigation |
+| Updated DeTTECT Scores | [04 Detection Engineering](../04-Detection-Engineering/) | Validated or corrected detection scores based on real incidents |
+| Forensic Readiness Reports | [01 Governance](../01-Governance/) | Pre-collection readiness status and improvement needs |
 
 ---
 

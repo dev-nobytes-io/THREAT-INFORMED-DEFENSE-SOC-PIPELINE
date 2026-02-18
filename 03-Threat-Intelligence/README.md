@@ -219,6 +219,21 @@ Where:
 
 ---
 
+## Inputs
+
+| Input | Source Module | Description |
+|---|---|---|
+| Crown Jewel List & Risk Context | [01 Governance](../01-Governance/) | Business-critical assets and risk appetite for threat prioritisation |
+| Data Source Inventory | [02 Data Documentation](../02-Data-Documentation/) | Available telemetry — determines detection feasibility scoring |
+| OSSEM-DM Relationship Map | [02 Data Documentation](../02-Data-Documentation/) | Observable entity relationships — what threats we *can* see in data |
+| Detection Test Results | [07 Detection Testing](../07-Detection-Testing/) | Validated detection scores feed back into threat profile re-prioritisation |
+| Incident Intel Reports | [05 Incident Response](../05-Incident-Response/) | ATT&CK-mapped incident findings updating composite threat profile |
+| Forensic ATT&CK Technique Maps | [08 Forensics & DFIR](../08-Forensics-DFIR/) | Confirmed adversary techniques from forensic analysis |
+| New Indicators of Compromise | [08 Forensics & DFIR](../08-Forensics-DFIR/) | IOCs extracted from forensic evidence for TIP ingestion |
+| External Threat Feeds | External (ISACs, OSINT, Vendor) | STIX/TAXII feeds, threat reports, community intelligence |
+
+---
+
 ## Outputs
 
 | Output | Consumers | Description |

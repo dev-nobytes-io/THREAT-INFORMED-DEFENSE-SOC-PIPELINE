@@ -243,15 +243,30 @@ LESSONS LEARNED:
 
 ---
 
+## Inputs
+
+| Input | Source Module | Description |
+|---|---|---|
+| Detection Alerts | [04 Detection Engineering](../04-Detection-Engineering/) | SIEM/EDR alerts from deployed Sigma rules and correlation logic |
+| Prioritised Technique List | [03 Threat Intelligence](../03-Threat-Intelligence/) | ATT&CK technique priorities driving playbook development order |
+| ATT&CK Navigator Layers | [03 Threat Intelligence](../03-Threat-Intelligence/) | Threat profile context for alert triage and investigation |
+| Forensic Evidence & Reports | [08 Forensics & DFIR](../08-Forensics-DFIR/) | Artefact analysis, timelines, ATT&CK mapping from forensic investigation |
+| Countermeasure Status | [06 Countermeasures](../06-Countermeasures/) | Which D3FEND controls are deployed — informs containment decisions |
+| SOC Charter & Authority | [01 Governance](../01-Governance/) | Escalation authority, containment decision rights, legal boundaries |
+| Data Source Inventory | [02 Data Documentation](../02-Data-Documentation/) | Available telemetry for identification actions (which logs to pull) |
+
+---
+
 ## Outputs
 
 | Output | Consumers | Description |
 |---|---|---|
 | Response Playbooks | SOC Analysts (all tiers) | Step-by-step response procedures per technique |
 | Escalation Matrix | All SOC staff | Severity-based escalation procedures |
-| Incident Reports | Module 01 (Governance), Module 03 (Intel) | Post-incident findings mapped to ATT&CK |
-| Playbook Updates | Module 04 (Detection) | Detection gaps identified during response |
+| Incident Reports (ATT&CK-mapped) | [01 Governance](../01-Governance/), [03 Threat Intel](../03-Threat-Intelligence/) | Post-incident findings mapped to ATT&CK |
+| Playbook Updates | [04 Detection Engineering](../04-Detection-Engineering/) | Detection gaps identified during response |
 | Lessons Learned | All modules | Process improvements from real incidents |
+| Forensic Acquisition Requests | [08 Forensics & DFIR](../08-Forensics-DFIR/) | Evidence collection requests triggered by incident investigation |
 
 ---
 

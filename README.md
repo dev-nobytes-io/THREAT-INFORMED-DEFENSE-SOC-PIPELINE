@@ -9,43 +9,101 @@ A structured, open-framework pipeline for building and maturing a Security Opera
 ## Pipeline Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    THREAT-INFORMED DEFENSE SOC PIPELINE                      │
-│                    M3TID Continuous Hunt Cycle                               │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌─────────────┐   ┌──────────────┐   ┌──────────────┐   ┌─────────────┐  │
-│  │ 01           │   │ 02           │   │ 03           │   │ 04          │  │
-│  │ GOVERNANCE   │──▶│ DATA         │──▶│ THREAT       │──▶│ DETECTION   │  │
-│  │ (Authority)  │   │ DOCUMENTATION│   │ INTELLIGENCE │   │ ENGINEERING │  │
-│  │              │   │ (Foundation) │   │ (Direction)  │   │ (Codify)    │  │
-│  │ NIST CSF 2.0 │   │ OSSEM        │   │ MITRE ATT&CK │   │ DeTTECT    │  │
-│  │ ASD CSF      │   │ TH Playbook  │   │ M3TID        │   │ MITRE CAR   │  │
-│  │ DoDCWF 8140  │   │ Pre-Hunt     │   │              │   │ Sigma       │  │
-│  │ CIISec       │   │ Data Mgmt    │   │              │   │ CI/CD       │  │
-│  └─────────────┘   └──────────────┘   └──────────────┘   └──────┬──────┘  │
-│                                                                   │         │
-│         ┌────────────────────────────────────────────────────────┘         │
-│         ▼                                                                   │
-│  ┌─────────────┐   ┌──────────────┐   ┌──────────────┐                     │
-│  │ 05           │   │ 06           │   │ 07           │                     │
-│  │ INCIDENT     │──▶│ COUNTER-     │──▶│ DETECTION    │ ──┐                │
-│  │ RESPONSE     │   │ MEASURES     │   │ TESTING      │   │                │
-│  │ (Activate)   │   │ (Harden)     │   │ (Validate)   │   │                │
-│  │              │   │              │   │              │   │  Continuous   │
-│  │ RE&CT        │   │ MITRE D3FEND │   │ Atomic RT    │   │  Feedback    │
-│  │              │   │              │   │ attack_range │   │  Loop        │
-│  └─────────────┘   └──────────────┘   └──────────────┘   │                │
-│                                                            │                │
-│         ┌──────────────────────────────────────────────────┘                │
-│         ▼                                                                   │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                    EVERLASTING BASELINE HUNT                         │    │
-│  │   Testing → Gaps → Hypotheses → Analytics → Detections → Testing   │    │
-│  │         ◀───── M3TID cycle ─────▶  SOC-CMM maturity ─────▶         │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────┐
+│                    THREAT-INFORMED DEFENSE SOC PIPELINE                          │
+│                    M3TID Continuous Hunt Cycle                                   │
+├────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                │
+│  ┌──────────────┐  Charter    ┌──────────────┐  Data src   ┌──────────────┐  │
+│  │ 01            │  scope     │ 02            │  reqs      │ 03            │  │
+│  │ GOVERNANCE    │─────────▶ │ DATA          │◀─────────  │ THREAT        │  │
+│  │ (Authority)   │  assets    │ DOCUMENTATION │─────────▶ │ INTELLIGENCE  │  │
+│  │               │           │ (Foundation)  │  inventory  │ (Direction)   │  │
+│  │ NIST CSF 2.0  │           │ OSSEM (DD,    │  CDM, DM    │ MITRE ATT&CK  │  │
+│  │ ASD, DoDCWF   │           │ CDM, DM)      │  quality    │ M3TID         │  │
+│  │ CIISec        │           │ TH Playbook   │            │               │  │
+│  └───────▲──────┘           └───────┬──────┘            └───────┬──────┘  │
+│          │                          │                            │          │
+│  reports │    ┌─────────────────────┘ CDM, DM,          tech    │          │
+│  KPIs    │    │                       quality           list    │          │
+│  gaps    │    ▼                                          │          │
+│          │  ┌──────────────┐  Sigma    ┌──────────────┐ │          │
+│          │  │ 04            │  rules   │ 07            │◀┘ threat   │
+│          │  │ DETECTION     │────────▶│ DETECTION     │   profile  │
+│          │  │ ENGINEERING   │◀────────│ TESTING       │            │
+│          │  │ (Codify)      │  scores  │ (Validate)   │            │
+│          │  │               │  gaps    │              │            │
+│          │  │ DeTTECT, CAR  │          │ Atomic RT     │            │
+│          │  │ Sigma, CI/CD  │          │ attack_range  │            │
+│          │  └──────┬───────┘          └──────┬───────┘            │
+│          │         │ alerts                   │ gaps               │
+│          │         ▼                          ▼                    │
+│          │  ┌──────────────┐  gaps     ┌──────────────┐           │
+│          │  │ 05            │────────▶│ 06            │           │
+│          │  │ INCIDENT      │◀────────│ COUNTER-      │           │
+│          │  │ RESPONSE      │  status  │ MEASURES      │           │
+│          │  │ (Activate)    │          │ (Harden)      │           │
+│          │  │ RE&CT         │          │ MITRE D3FEND  │           │
+│          │  └──────┬───────┘          └──────────────┘           │
+│          │         │ acquisition                                   │
+│          │         │ requests         findings feed back           │
+│          │         ▼                  to 02, 03, 04, 07           │
+│          │  ┌──────────────┐                 │                    │
+│          │  │ 08            │─────────────────┘                    │
+│          │  │ FORENSICS &   │                                      │
+│          │  │ DFIR          │──────────────────────────────────┐  │
+│          │  │ (Evidence)    │                                   │  │
+│          │  │ Velociraptor  │  reports, readiness               │  │
+│          │  │ Volatility 3  │──────────────────────────────┐   │  │
+│          │  └──────────────┘                               │   │  │
+│          │                                                  │   │  │
+│          └──────────────────────────────────────────────────┘   │  │
+│                                                                  │  │
+│  ┌───────────────────────────────────────────────────────────────┘  │
+│  │                                                                  │
+│  ▼  EVERLASTING BASELINE HUNT                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Test → Gaps → Hypotheses → Analytics → Detections → Test      │ │
+│  │      ◀──── M3TID cycle ────▶   SOC-CMM maturity ────▶        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│                                                                      │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Module Data Flow
+
+Every module in the pipeline has explicit **inputs** (what it consumes) and **outputs** (what it produces). The pipeline is not a linear sequence — it is a **directed graph with feedback loops**. The table below summarises every inter-module data flow:
+
+| From | To | What Flows | Direction |
+|---|---|---|---|
+| **01 Governance** | 02, 03, 05, 08 | SOC charter, crown jewel list, risk context, legal authority | Forward |
+| **02 Data Documentation** | 03, 04, 05, 07, 08 | Data source inventory, CDM mappings, DM relationships, quality scores | Forward |
+| **03 Threat Intelligence** | 02, 04, 05, 06, 07, 08 | Prioritised technique list, Navigator layers, data source requirements, IOCs | Forward + Backward |
+| **04 Detection Engineering** | 01, 05, 06, 07 | Detection alerts, Sigma rules, DeTTECT layers, gap analysis | Forward |
+| **05 Incident Response** | 01, 03, 04, 08 | Incident reports, lessons learned, detection gaps, acquisition requests | Feedback |
+| **06 Countermeasures** | 01, 05, 07 | D3FEND mappings, countermeasure status, defence-in-depth map | Forward |
+| **07 Detection Testing** | 01, 03, 04, 06 | Test results, validated DeTTECT scores, coverage dashboard, gap tickets | Feedback |
+| **08 Forensics & DFIR** | 01, 02, 03, 04, 07 | Investigation reports, ATT&CK maps, IOCs, detection gaps, data source gaps | Feedback |
+
+### Key Feedback Loops
+
+```
+Loop 1 — Detection Improvement:  04 → 07 → 04
+  Detection rules tested → failures identified → rules improved → re-tested
+
+Loop 2 — Threat Profile Update:  03 → 04 → 07 → 03
+  Threat profile drives detections → testing validates → results re-prioritise profile
+
+Loop 3 — Incident Learning:  04 → 05 → 08 → 03 → 04
+  Alert fires → IR activates → forensics confirms → intel updated → detections improved
+
+Loop 4 — Hardening Cycle:  04 → 06 → 07 → 06
+  Detection gaps → countermeasures deployed → tested → refined
+
+Loop 5 — Data Completeness:  02 → 04 → 07 → 02
+  Data documented → detections built → testing reveals data gaps → data onboarded
 ```
 
 ---
