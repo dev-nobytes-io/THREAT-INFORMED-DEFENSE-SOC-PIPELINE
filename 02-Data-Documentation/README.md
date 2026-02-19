@@ -11,31 +11,36 @@ Data documentation is the prerequisite for every detection, hunt, and investigat
 
 The Threat Hunters Playbook defines **four data management disciplines** that must be established before any hunt or detection can succeed. This module implements all four as a progression:
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│              THREAT HUNTERS PLAYBOOK DATA MANAGEMENT                │
-│                                                                      │
-│   1. DATA DOCUMENTATION                                              │
-│      Know what you collect — field inventories, data dictionaries     │
-│      └──▶ OSSEM Data Dictionaries (OSSEM-DD)                         │
-│                     │                                                │
-│   2. DATA STANDARDISATION                                            │
-│      Normalise field names across all sources                         │
-│      └──▶ OSSEM Common Data Model (OSSEM-CDM)                        │
-│      └──▶ See: data-standardisation.md                                │
-│                     │                                                │
-│   3. DATA MODELLING                                                  │
-│      Map entity relationships and link to ATT&CK data components     │
-│      └──▶ OSSEM Detection Model (OSSEM-DM)                           │
-│      └──▶ See: data-modelling.md                                      │
-│                     │                                                │
-│   4. DATA QUALITY                                                    │
-│      Verify completeness, consistency, and timeliness                 │
-│      └──▶ Quality scoring rubric (this document)                      │
-│                                                                      │
-│   Result: Detection analytics built on a known, normalised,          │
-│           modelled, quality-assessed data foundation                  │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    title["THREAT HUNTERS PLAYBOOK DATA MANAGEMENT"]
+    style title fill:none,stroke:none,font-size:16px
+
+    D1["1. DATA DOCUMENTATION\nKnow what you collect — field inventories, data dictionaries"]
+    D1a["OSSEM Data Dictionaries (OSSEM-DD)"]
+    D1 --> D1a
+
+    D2["2. DATA STANDARDISATION\nNormalise field names across all sources"]
+    D2a["OSSEM Common Data Model (OSSEM-CDM)"]
+    D2b["See: data-standardisation.md"]
+    D1a --> D2
+    D2 --> D2a
+    D2 --> D2b
+
+    D3["3. DATA MODELLING\nMap entity relationships and link to ATT&CK data components"]
+    D3a["OSSEM Detection Model (OSSEM-DM)"]
+    D3b["See: data-modelling.md"]
+    D2a --> D3
+    D3 --> D3a
+    D3 --> D3b
+
+    D4["4. DATA QUALITY\nVerify completeness, consistency, and timeliness"]
+    D4a["Quality scoring rubric (this document)"]
+    D3a --> D4
+    D4 --> D4a
+
+    D4a --> Result["Result: Detection analytics built on a known,\nnormalised, modelled, quality-assessed data foundation"]
+    style Result fill:#e8f5e9,stroke:#388e3c
 ```
 
 ### Module Directory
@@ -68,25 +73,32 @@ OSSEM provides a common information model and data dictionaries for security eve
 
 ### OSSEM Components Used in This Pipeline
 
-```
-OSSEM Project
-├── OSSEM-DD  (Data Dictionaries)        → Per-source field documentation
-│   ├── Windows (Security, Sysmon, PowerShell)
-│   ├── Linux (Auditd, Syslog)
-│   ├── Cloud (AWS CloudTrail, Azure AD, GCP)
-│   └── Network (Zeek, Suricata, Firewall)
-│
-├── OSSEM-CDM (Common Data Model)        → Normalise field names across sources
-│   ├── 37 Schema Entities               → Atomic field definitions (process, file, user, ...)
-│   ├── Field Naming Convention           → {prefix}_{attribute} pattern
-│   └── Schema Tables                    → Composite normalised event schemas
-│
-├── OSSEM-DM  (Detection Model)          → Map data to ATT&CK data sources
-│   ├── Entity Relationships             → Source ──[verb]──▶ Target patterns
-│   ├── ATT&CK Data Component Mapping    → Relationship → Data Component → Data Source
-│   └── Techniques-to-Events Mapping     → ATT&CK technique → required security events
-│
-└── OSSEM Attack API                     → ATT&CK technique ↔ data source relationships
+```mermaid
+flowchart TD
+    OSSEM["OSSEM Project"]
+
+    DD["OSSEM-DD (Data Dictionaries)\nPer-source field documentation"]
+    CDM["OSSEM-CDM (Common Data Model)\nNormalise field names across sources"]
+    DM["OSSEM-DM (Detection Model)\nMap data to ATT&CK data sources"]
+    API["OSSEM Attack API\nATT&CK technique <-> data source relationships"]
+
+    OSSEM --> DD
+    OSSEM --> CDM
+    OSSEM --> DM
+    OSSEM --> API
+
+    DD --> DD1["Windows (Security, Sysmon, PowerShell)"]
+    DD --> DD2["Linux (Auditd, Syslog)"]
+    DD --> DD3["Cloud (AWS CloudTrail, Azure AD, GCP)"]
+    DD --> DD4["Network (Zeek, Suricata, Firewall)"]
+
+    CDM --> CDM1["37 Schema Entities\nAtomic field definitions (process, file, user, ...)"]
+    CDM --> CDM2["Field Naming Convention\n{prefix}_{attribute} pattern"]
+    CDM --> CDM3["Schema Tables\nComposite normalised event schemas"]
+
+    DM --> DM1["Entity Relationships\nSource --[verb]--> Target patterns"]
+    DM --> DM2["ATT&CK Data Component Mapping\nRelationship -> Data Component -> Data Source"]
+    DM --> DM3["Techniques-to-Events Mapping\nATT&CK technique -> required security events"]
 ```
 
 ### Data Source Inventory Template
@@ -278,28 +290,35 @@ The Threat Hunters Playbook by the Open Threat Research (OTR) community provides
 
 ### How It Feeds the Pipeline
 
-```
-Threat Hunters Playbook
-        │
-        ├──▶ Module 02 (This Module)
-        │    ├── Data documentation requirements per technique
-        │    ├── Data standardisation methodology (CDM approach)
-        │    ├── Data modelling patterns (entity relationships)
-        │    └── Data quality requirements for hunt-readiness
-        │
-        ├──▶ Module 03 (Threat Intelligence)
-        │    - ATT&CK technique prioritisation
-        │    - Adversary behaviour patterns
-        │
-        ├──▶ Module 04 (Detection Engineering)
-        │    - Pre-built analytics as detection starting points
-        │    - Query templates using CDM field names (Sigma, KQL, SPL)
-        │    - Entity relationship-based detection logic
-        │
-        └──▶ Module 07 (Detection Testing)
-             - Security Datasets (Mordor) for offline testing
-             - Simulation procedures for live testing
-             - Validation of entity relationship observability
+```mermaid
+flowchart TD
+    THP["Threat Hunters Playbook"]
+
+    M02["Module 02 (This Module)"]
+    M03["Module 03 (Threat Intelligence)"]
+    M04["Module 04 (Detection Engineering)"]
+    M07["Module 07 (Detection Testing)"]
+
+    THP --> M02
+    THP --> M03
+    THP --> M04
+    THP --> M07
+
+    M02 --> M02a["Data documentation requirements per technique"]
+    M02 --> M02b["Data standardisation methodology (CDM approach)"]
+    M02 --> M02c["Data modelling patterns (entity relationships)"]
+    M02 --> M02d["Data quality requirements for hunt-readiness"]
+
+    M03 --> M03a["ATT&CK technique prioritisation"]
+    M03 --> M03b["Adversary behaviour patterns"]
+
+    M04 --> M04a["Pre-built analytics as detection starting points"]
+    M04 --> M04b["Query templates using CDM field names\n(Sigma, KQL, SPL)"]
+    M04 --> M04c["Entity relationship-based detection logic"]
+
+    M07 --> M07a["Security Datasets (Mordor) for offline testing"]
+    M07 --> M07b["Simulation procedures for live testing"]
+    M07 --> M07c["Validation of entity relationship observability"]
 ```
 
 ### Playbook-Driven Data Gap Analysis
@@ -325,53 +344,52 @@ Use the Threat Hunters Playbook to identify what data your SOC is missing:
 
 ### Step-by-Step Process
 
-```
-1. INVENTORY          2. DOCUMENT           3. STANDARDISE        4. MODEL
-List all log      →   Map each source   →   Apply OSSEM CDM   →   Map entity
-sources currently      to OSSEM Data         {prefix}_{attr}       relationships
-collected              Dictionaries (DD)     naming convention     (Source→Verb→Target)
-        │                    │                     │                     │
-        ▼                    ▼                     ▼                     ▼
-5. VALIDATE           6. GAP ANALYSIS       7. PRIORITISE         8. ONBOARD
-Score quality     →   Compare to TH     →   Rank gaps by     →   Deploy collection
-per data source       Playbook required      ATT&CK technique      for new sources
-(Disciplines 1-4)     relationships          priority (Mod 03)     and standardise
-        │                    │                     │                     │
-        ▼                    ▼                     ▼                     ▼
-9. BASELINE           10. INTEGRATE         11. REVIEW
-Establish volume  →   Feed CDM mappings →   Schedule quarterly
-and field              and relationship       data quality and
-baselines              model to Mod 04        relationship reviews
+```mermaid
+flowchart LR
+    S1["1. INVENTORY\nList all log sources\ncurrently collected"]
+    S2["2. DOCUMENT\nMap each source to\nOSSEM Data Dictionaries (DD)"]
+    S3["3. STANDARDISE\nApply OSSEM CDM\n{prefix}_{attr} naming convention"]
+    S4["4. MODEL\nMap entity relationships\n(Source->Verb->Target)"]
+    S5["5. VALIDATE\nScore quality per\ndata source (Disciplines 1-4)"]
+    S6["6. GAP ANALYSIS\nCompare to TH Playbook\nrequired relationships"]
+    S7["7. PRIORITISE\nRank gaps by ATT&CK\ntechnique priority (Mod 03)"]
+    S8["8. ONBOARD\nDeploy collection for\nnew sources and standardise"]
+    S9["9. BASELINE\nEstablish volume\nand field baselines"]
+    S10["10. INTEGRATE\nFeed CDM mappings and\nrelationship model to Mod 04"]
+    S11["11. REVIEW\nSchedule quarterly data\nquality and relationship reviews"]
+
+    S1 --> S2 --> S3 --> S4
+    S4 --> S5 --> S6 --> S7 --> S8
+    S8 --> S9 --> S10 --> S11
 ```
 
 ### Data Source Priority Matrix
 
 Cross-reference data source value against collection cost:
 
-```
-HIGH VALUE ─────────────────────────────────────┐
-│                                               │
-│  ★ Process Creation (Sysmon 1)                │
-│  ★ PowerShell Script Block Logging            │
-│  ★ DNS Query Logs                             │
-│  ★ Authentication Events                       │
-│  ★ Network Connection (Sysmon 3 / Zeek)       │
-│  ★ File Creation (Sysmon 11)                  │
-│                                               │
-├───────────────────────────────────────────────┤
-│  ■ Registry Modification (Sysmon 13)          │
-│  ■ WMI Events (Sysmon 19-21)                  │
-│  ■ Cloud API Calls (CloudTrail, AzureAD)      │
-│  ■ Email Gateway Logs                         │
-│                                               │
-├───────────────────────────────────────────────┤
-│  ○ Image Load (Sysmon 7)                      │
-│  ○ Raw Named Pipe (Sysmon 17-18)              │
-│  ○ Driver Load (Sysmon 6)                     │
-│  ○ Full Packet Capture                        │
-│                                               │
-LOW VALUE ──────────────────────────────────────┘
-     LOW COST ────────────────────── HIGH COST
+```mermaid
+quadrantChart
+    title Data Source Priority Matrix
+    x-axis Low Cost --> High Cost
+    y-axis Low Value --> High Value
+    quadrant-1 High Value / High Cost
+    quadrant-2 High Value / Low Cost
+    quadrant-3 Low Value / Low Cost
+    quadrant-4 Low Value / High Cost
+    Process Creation (Sysmon 1): [0.25, 0.95]
+    PowerShell Script Block Logging: [0.30, 0.90]
+    DNS Query Logs: [0.20, 0.85]
+    Authentication Events: [0.15, 0.80]
+    Network Connection (Sysmon 3 / Zeek): [0.35, 0.75]
+    File Creation (Sysmon 11): [0.30, 0.70]
+    Registry Modification (Sysmon 13): [0.45, 0.55]
+    WMI Events (Sysmon 19-21): [0.50, 0.50]
+    Cloud API Calls (CloudTrail, AzureAD): [0.65, 0.55]
+    Email Gateway Logs: [0.60, 0.45]
+    Image Load (Sysmon 7): [0.55, 0.30]
+    Raw Named Pipe (Sysmon 17-18): [0.65, 0.25]
+    Driver Load (Sysmon 6): [0.50, 0.20]
+    Full Packet Capture: [0.85, 0.15]
 ```
 
 Prioritise the upper-left quadrant: high detection value, lower collection cost.

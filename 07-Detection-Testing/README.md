@@ -46,33 +46,17 @@ Atomic Red Team provides small, discrete test procedures ("atomics") for individ
 
 ### Atomic Testing Workflow
 
-```
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│ 1. SELECT    │───▶│ 2. EXECUTE   │───▶│ 3. VALIDATE  │───▶│ 4. RECORD    │
-│              │    │              │    │              │    │              │
-│ Pick tech-   │    │ Run atomic   │    │ Check SIEM:  │    │ Update       │
-│ niques from  │    │ test on      │    │ Did alert    │    │ DeTTECT      │
-│ Module 03    │    │ target host  │    │ fire?        │    │ scores       │
-│ threat       │    │              │    │ Right fields?│    │ (Module 04)  │
-│ profile      │    │              │    │ Right        │    │              │
-│              │    │              │    │ severity?    │    │              │
-└──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
-       │                                       │
-       │                                       ▼
-       │                                ┌──────────────┐
-       │                                │ 5. REMEDIATE │
-       │                                │              │
-       │                                │ Detection    │
-       │                                │ failed?      │
-       │                                │ → Module 04  │
-       │                                │   fix rule   │
-       │                                │              │
-       │                                │ Countermeas. │
-       │                                │ bypassed?    │
-       │                                │ → Module 06  │
-       │                                │   harden     │
-       └────────────────────────────────┘──────────────┘
-                    REPEAT CYCLE
+```mermaid
+flowchart LR
+    SELECT["1. SELECT\n\nPick techniques\nfrom Module 03\nthreat profile"]
+    EXECUTE["2. EXECUTE\n\nRun atomic test\non target host"]
+    VALIDATE["3. VALIDATE\n\nCheck SIEM:\nDid alert fire?\nRight fields?\nRight severity?"]
+    RECORD["4. RECORD\n\nUpdate DeTTECT\nscores\n(Module 04)"]
+    REMEDIATE["5. REMEDIATE\n\nDetection failed?\n→ Module 04 fix rule\n\nCountermeasure bypassed?\n→ Module 06 harden"]
+
+    SELECT --> EXECUTE --> VALIDATE --> RECORD
+    VALIDATE --> REMEDIATE
+    REMEDIATE -->|REPEAT CYCLE| SELECT
 ```
 
 ### Running Atomic Tests
@@ -172,21 +156,18 @@ Splunk's attack_range provisions a complete attack simulation environment in AWS
 
 ### attack_range Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    attack_range Lab                       │
-│                                                          │
-│  ┌──────────┐   ┌──────────┐   ┌──────────────────────┐│
-│  │  Kali    │   │ Windows  │   │  Splunk Enterprise   ││
-│  │  Attack  │──▶│ Domain   │──▶│  (log collection)    ││
-│  │  Host    │   │ (DC+WS)  │   │                      ││
-│  └──────────┘   └──────────┘   │  Pre-configured:     ││
-│                  ┌──────────┐   │  - Sysmon logs       ││
-│                  │  Linux   │──▶│  - WinEventLog       ││
-│                  │  Server  │   │  - Zeek logs         ││
-│                  └──────────┘   │  - Detection rules   ││
-│                                 └──────────────────────┘│
-└─────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph attack_range_Lab["attack_range Lab"]
+        Kali["Kali\nAttack Host"]
+        Windows["Windows Domain\n(DC+WS)"]
+        Linux["Linux\nServer"]
+        Splunk["Splunk Enterprise\n(log collection)\n\nPre-configured:\n- Sysmon logs\n- WinEventLog\n- Zeek logs\n- Detection rules"]
+
+        Kali -->|attack| Windows
+        Windows -->|logs| Splunk
+        Linux -->|logs| Splunk
+    end
 ```
 
 ### Setting Up attack_range
@@ -260,32 +241,19 @@ python attack_range.py simulate -st T1021.002 -t attack-range-windows-domain-con
 
 #### Scenario 3: Purple Team Exercise
 
-```
-Purple Team Exercise Plan
-─────────────────────────
-Objective: Validate detection of [Threat Group] TTPs
+```mermaid
+flowchart TD
+    OBJ["Purple Team Exercise Plan\n\nObjective: Validate detection\nof Threat Group TTPs"]
 
-1. PRE-EXERCISE
-   - Build attack_range environment
-   - Deploy current Sigma rules to Splunk
-   - Brief red team on approved technique scope
-   - Brief blue team that exercise is occurring
+    PRE["1. PRE-EXERCISE\n\n- Build attack_range environment\n- Deploy current Sigma rules to Splunk\n- Brief red team on approved technique scope\n- Brief blue team that exercise is occurring"]
 
-2. EXECUTION
-   - Red team executes techniques from threat profile (Module 03)
-   - Blue team monitors SIEM in real-time
-   - Document: which alerts fired, which were missed
+    EXEC["2. EXECUTION\n\n- Red team executes techniques\n  from threat profile (Module 03)\n- Blue team monitors SIEM in real-time\n- Document: which alerts fired,\n  which were missed"]
 
-3. POST-EXERCISE
-   - Compare red team activity log vs. blue team detections
-   - Calculate detection coverage percentage
-   - Identify gaps → feed back to Module 04
-   - Update DeTTECT scores with validated results
+    POST["3. POST-EXERCISE\n\n- Compare red team activity log\n  vs. blue team detections\n- Calculate detection coverage percentage\n- Identify gaps → feed back to Module 04\n- Update DeTTECT scores with validated results"]
 
-4. REPORTING
-   - ATT&CK Navigator layer showing tested techniques
-   - Green = detected, Red = missed, Yellow = partial
-   - Action items for each gap
+    REPORT["4. REPORTING\n\n- ATT&CK Navigator layer showing\n  tested techniques\n- Green = detected, Red = missed,\n  Yellow = partial\n- Action items for each gap"]
+
+    OBJ --> PRE --> EXEC --> POST --> REPORT
 ```
 
 ---

@@ -19,23 +19,45 @@ RE&CT maps response actions to a structured lifecycle, similar to how ATT&CK map
 
 ### RE&CT Response Stages
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    RE&CT RESPONSE STAGES                         │
-├───────────┬───────────┬───────────┬───────────┬─────────────────┤
-│PREPARATION│IDENTIFICA-│CONTAINMENT│ERADICATION│RECOVERY /       │
-│           │TION       │           │           │LESSONS LEARNED  │
-├───────────┼───────────┼───────────┼───────────┼─────────────────┤
-│RA.PREP    │RA.IDENT   │RA.CONT   │RA.ERAD    │RA.RECV/RA.LL   │
-│           │           │           │           │                 │
-│Inventory  │List hosts │Block IP   │Remove     │Restore from     │
-│Train staff│Get logs   │Block      │ malware   │ backup          │
-│Set up     │Analyze    │ domain    │Reset      │Unblock          │
-│ tools     │ events    │Isolate    │ accounts  │ services        │
-│Practice   │Check IoCs │ host      │Patch vuln │Report findings  │
-│ playbooks │Identify   │Disable    │Revoke     │Update playbooks │
-│           │ accounts  │ account   │ certs     │                 │
-└───────────┴───────────┴───────────┴───────────┴─────────────────┘
+```mermaid
+flowchart LR
+    subgraph PREP["PREPARATION\n(RA.PREP)"]
+        P1["Inventory"]
+        P2["Train staff"]
+        P3["Set up tools"]
+        P4["Practice playbooks"]
+    end
+
+    subgraph IDENT["IDENTIFICATION\n(RA.IDENT)"]
+        I1["List hosts"]
+        I2["Get logs"]
+        I3["Analyze events"]
+        I4["Check IoCs"]
+        I5["Identify accounts"]
+    end
+
+    subgraph CONT["CONTAINMENT\n(RA.CONT)"]
+        C1["Block IP"]
+        C2["Block domain"]
+        C3["Isolate host"]
+        C4["Disable account"]
+    end
+
+    subgraph ERAD["ERADICATION\n(RA.ERAD)"]
+        E1["Remove malware"]
+        E2["Reset accounts"]
+        E3["Patch vuln"]
+        E4["Revoke certs"]
+    end
+
+    subgraph RECV["RECOVERY / LESSONS LEARNED\n(RA.RECV / RA.LL)"]
+        R1["Restore from backup"]
+        R2["Unblock services"]
+        R3["Report findings"]
+        R4["Update playbooks"]
+    end
+
+    PREP --> IDENT --> CONT --> ERAD --> RECV
 ```
 
 ### RE&CT Response Action Categories
@@ -57,14 +79,14 @@ RE&CT maps response actions to a structured lifecycle, similar to how ATT&CK map
 
 Each response playbook maps an ATT&CK technique to specific RE&CT actions:
 
-```
-ATT&CK Technique ──▶ Detection Alert ──▶ RE&CT Response Playbook
-                                              │
-                                              ├── Identification Actions
-                                              ├── Containment Actions
-                                              ├── Eradication Actions
-                                              ├── Recovery Actions
-                                              └── Lessons Learned Actions
+```mermaid
+flowchart LR
+    A["ATT&CK Technique"] --> B["Detection Alert"] --> C["RE&CT Response Playbook"]
+    C --> D["Identification Actions"]
+    C --> E["Containment Actions"]
+    C --> F["Eradication Actions"]
+    C --> G["Recovery Actions"]
+    C --> H["Lessons Learned Actions"]
 ```
 
 ### Playbook Template

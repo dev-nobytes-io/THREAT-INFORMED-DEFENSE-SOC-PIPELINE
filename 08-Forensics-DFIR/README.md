@@ -30,34 +30,34 @@ Forensics transforms suspected incidents into confirmed, evidence-backed finding
 
 ## Capability Areas
 
-```
-FORENSIC CAPABILITY STACK
+```mermaid
+flowchart TD
+    subgraph CoC["CHAIN OF CUSTODY"]
+        CoC_Desc["Evidence integrity underpins everything — break it, lose it all"]
+    end
 
-┌─────────────────────────────────────────────────────────────────────┐
-│                        CHAIN OF CUSTODY                              │
-│   Evidence integrity underpins everything — break it, lose it all    │
-├────────────┬────────────┬────────────┬────────────┬─────────────────┤
-│ ACQUISITION│  MEMORY    │   DISK     │  NETWORK   │   TIMELINE      │
-│            │  FORENSICS │  FORENSICS │  FORENSICS │   ANALYSIS      │
-│ Live +     │ Process    │ File sys   │ PCAP       │ Super-timeline  │
-│ dead       │ analysis   │ analysis   │ analysis   │ generation      │
-│ imaging    │ Injected   │ Artefact   │ Flow       │ Artefact        │
-│ Triage     │ code       │ carving    │ analysis   │ correlation     │
-│ collection │ Malware    │ Deleted    │ DNS        │ Temporal        │
-│            │ in memory  │ file       │ forensics  │ pattern         │
-│            │            │ recovery   │ TLS/SSL    │ identification  │
-│            │            │            │ inspection │                 │
-├────────────┴────────────┴────────────┴────────────┴─────────────────┤
-│                       ARTEFACT PARSING                               │
-│   Windows artefacts (Registry, Event Logs, Prefetch, SRUM, Amcache, │
-│   ShimCache, MFT, USN Journal, Shellbags, LNK, JumpLists)          │
-│   Linux artefacts (auth.log, wtmp/btmp, .bash_history, cron,        │
-│   systemd journals, /proc, auditd)                                  │
-│   macOS artefacts (FSEvents, Spotlight, KnowledgeC, Unified Log)    │
-├─────────────────────────────────────────────────────────────────────┤
-│                       REPORTING & HANDOFF                            │
-│   Findings → Module 03 (intel), Module 04 (detections), legal       │
-└─────────────────────────────────────────────────────────────────────┘
+    subgraph Core["CORE FORENSIC DISCIPLINES"]
+        direction LR
+        ACQ["<b>ACQUISITION</b><br/>Live + dead imaging<br/>Triage collection"]
+        MEM["<b>MEMORY FORENSICS</b><br/>Process analysis<br/>Injected code<br/>Malware in memory"]
+        DISK["<b>DISK FORENSICS</b><br/>File sys analysis<br/>Artefact carving<br/>Deleted file recovery"]
+        NET["<b>NETWORK FORENSICS</b><br/>PCAP analysis<br/>Flow analysis<br/>DNS forensics<br/>TLS/SSL inspection"]
+        TL["<b>TIMELINE ANALYSIS</b><br/>Super-timeline generation<br/>Artefact correlation<br/>Temporal pattern identification"]
+    end
+
+    subgraph AP["ARTEFACT PARSING"]
+        AP_Win["<b>Windows:</b> Registry, Event Logs, Prefetch, SRUM, Amcache, ShimCache, MFT, USN Journal, Shellbags, LNK, JumpLists"]
+        AP_Lin["<b>Linux:</b> auth.log, wtmp/btmp, .bash_history, cron, systemd journals, /proc, auditd"]
+        AP_Mac["<b>macOS:</b> FSEvents, Spotlight, KnowledgeC, Unified Log"]
+    end
+
+    subgraph RH["REPORTING & HANDOFF"]
+        RH_Desc["Findings → Module 03 (intel), Module 04 (detections), legal"]
+    end
+
+    CoC --> Core
+    Core --> AP
+    AP --> RH
 ```
 
 ---
@@ -140,30 +140,17 @@ This module is **tool-agnostic** — the pipeline specifies capabilities, not pr
 
 ### Standard Investigation Process
 
-```
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│ 1. IDENTIFY  │───▶│ 2. PRESERVE  │───▶│ 3. COLLECT   │───▶│ 4. ANALYSE   │
-│              │    │              │    │              │    │              │
-│ Scope the    │    │ Isolate      │    │ Acquire      │    │ Memory       │
-│ incident     │    │ evidence     │    │ evidence     │    │ Disk         │
-│ from IR      │    │ Chain of     │    │ Memory first │    │ Network      │
-│ (Module 05)  │    │ custody      │    │ then disk    │    │ Artefacts    │
-│              │    │ initiated    │    │ Log triage   │    │ Timeline     │
-└──────────────┘    └──────────────┘    └──────────────┘    └──────┬───────┘
-                                                                    │
-       ┌────────────────────────────────────────────────────────────┘
-       ▼
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│ 5. CORRELATE │───▶│ 6. REPORT    │───▶│ 7. FEEDBACK  │
-│              │    │              │    │              │
-│ Build        │    │ Document     │    │ Update       │
-│ timeline     │    │ findings     │    │ detections   │
-│ Map to       │    │ ATT&CK map  │    │ (Module 04)  │
-│ ATT&CK       │    │ Preserve     │    │ Update       │
-│ techniques   │    │ for legal    │    │ threat       │
-│              │    │              │    │ profile      │
-│              │    │              │    │ (Module 03)  │
-└──────────────┘    └──────────────┘    └──────────────┘
+```mermaid
+flowchart LR
+    S1["<b>1. IDENTIFY</b><br/>Scope the incident<br/>from IR (Module 05)"]
+    S2["<b>2. PRESERVE</b><br/>Isolate evidence<br/>Chain of custody initiated"]
+    S3["<b>3. COLLECT</b><br/>Acquire evidence<br/>Memory first, then disk<br/>Log triage"]
+    S4["<b>4. ANALYSE</b><br/>Memory · Disk<br/>Network · Artefacts<br/>Timeline"]
+    S5["<b>5. CORRELATE</b><br/>Build timeline<br/>Map to ATT&CK techniques"]
+    S6["<b>6. REPORT</b><br/>Document findings<br/>ATT&CK map<br/>Preserve for legal"]
+    S7["<b>7. FEEDBACK</b><br/>Update detections (Module 04)<br/>Update threat profile (Module 03)"]
+
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7
 ```
 
 ### Order of Volatility

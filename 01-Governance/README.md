@@ -29,17 +29,32 @@ This module integrates three governance frameworks:
 
 NIST CSF 2.0 introduced the **Govern (GV)** function as the overarching layer. This maps directly to SOC authority and charter.
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                    NIST CSF 2.0 FUNCTIONS                    │
-├──────────┬──────────┬──────────┬──────────┬──────────────────┤
-│  GOVERN  │ IDENTIFY │ PROTECT  │ DETECT   │ RESPOND/RECOVER  │
-│  (GV)    │ (ID)     │ (PR)     │ (DE)     │ (RS/RC)          │
-├──────────┼──────────┼──────────┼──────────┼──────────────────┤
-│ Module   │ Module   │ Module   │ Module   │ Module           │
-│ 01       │ 01, 02   │ 06       │ 04       │ 05               │
-│ Govern.  │ Data Doc │ Counter. │ Det.Eng  │ Inc. Response    │
-└──────────┴──────────┴──────────┴──────────┴──────────────────┘
+```mermaid
+flowchart TB
+    title["NIST CSF 2.0 FUNCTIONS"]
+    style title fill:none,stroke:none,font-weight:bold
+
+    subgraph GV["GOVERN (GV)"]
+        GV1["Module 01\nGovernance"]
+    end
+
+    subgraph ID["IDENTIFY (ID)"]
+        ID1["Module 01, 02\nData Documentation"]
+    end
+
+    subgraph PR["PROTECT (PR)"]
+        PR1["Module 06\nCountermeasures"]
+    end
+
+    subgraph DE["DETECT (DE)"]
+        DE1["Module 04\nDetection Engineering"]
+    end
+
+    subgraph RSRC["RESPOND / RECOVER (RS/RC)"]
+        RSRC1["Module 05\nIncident Response"]
+    end
+
+    GV --> ID --> PR --> DE --> RSRC
 ```
 
 ### Key CSF 2.0 Categories for SOC Governance
@@ -111,14 +126,15 @@ The Australian Signals Directorate Cyber Skills Framework provides a competency-
 
 ### Skills Progression Model
 
-```
-                    ASD Cyber Skills Levels
+```mermaid
+flowchart LR
+    L1["Level 1\nFoundation"] --> T1["SOC Tier 1 Analyst\nAlert Triage"]
+    L2["Level 2\nIntermediate"] --> T2["SOC Tier 2 Analyst\nInvestigation"]
+    L3["Level 3\nAdvanced"] --> T3["SOC Tier 3 /\nHunt Team Lead"]
+    L4["Level 4\nExpert"] --> T4["Detection Engineer /\nIR Lead"]
+    L5["Level 5\nPrincipal"] --> T5["SOC Manager /\nCISO Advisory"]
 
-Level 1: Foundation     → SOC Tier 1 Analyst (Alert Triage)
-Level 2: Intermediate   → SOC Tier 2 Analyst (Investigation)
-Level 3: Advanced       → SOC Tier 3 / Hunt Team Lead
-Level 4: Expert         → Detection Engineer / IR Lead
-Level 5: Principal      → SOC Manager / CISO Advisory
+    L1 ~~~ L2 ~~~ L3 ~~~ L4 ~~~ L5
 ```
 
 ### Skill Gap Analysis Process

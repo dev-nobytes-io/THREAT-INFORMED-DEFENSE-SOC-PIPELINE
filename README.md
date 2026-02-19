@@ -8,66 +8,44 @@ A structured, open-framework pipeline for building and maturing a Security Opera
 
 ## Pipeline Architecture
 
-```
-┌────────────────────────────────────────────────────────────────────────────────┐
-│                    THREAT-INFORMED DEFENSE SOC PIPELINE                          │
-│                    M3TID Continuous Hunt Cycle                                   │
-├────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                │
-│  ┌──────────────┐  Charter    ┌──────────────┐  Data src   ┌──────────────┐  │
-│  │ 01            │  scope     │ 02            │  reqs      │ 03            │  │
-│  │ GOVERNANCE    │─────────▶ │ DATA          │◀─────────  │ THREAT        │  │
-│  │ (Authority)   │  assets    │ DOCUMENTATION │─────────▶ │ INTELLIGENCE  │  │
-│  │               │           │ (Foundation)  │  inventory  │ (Direction)   │  │
-│  │ NIST CSF 2.0  │           │ OSSEM (DD,    │  CDM, DM    │ MITRE ATT&CK  │  │
-│  │ ASD, DoDCWF   │           │ CDM, DM)      │  quality    │ M3TID         │  │
-│  │ CIISec        │           │ TH Playbook   │            │               │  │
-│  └───────▲──────┘           └───────┬──────┘            └───────┬──────┘  │
-│          │                          │                            │          │
-│  reports │    ┌─────────────────────┘ CDM, DM,          tech    │          │
-│  KPIs    │    │                       quality           list    │          │
-│  gaps    │    ▼                                          │          │
-│          │  ┌──────────────┐  Sigma    ┌──────────────┐ │          │
-│          │  │ 04            │  rules   │ 07            │◀┘ threat   │
-│          │  │ DETECTION     │────────▶│ DETECTION     │   profile  │
-│          │  │ ENGINEERING   │◀────────│ TESTING       │            │
-│          │  │ (Codify)      │  scores  │ (Validate)   │            │
-│          │  │               │  gaps    │              │            │
-│          │  │ DeTTECT, CAR  │          │ Atomic RT     │            │
-│          │  │ Sigma, CI/CD  │          │ attack_range  │            │
-│          │  └──────┬───────┘          └──────┬───────┘            │
-│          │         │ alerts                   │ gaps               │
-│          │         ▼                          ▼                    │
-│          │  ┌──────────────┐  gaps     ┌──────────────┐           │
-│          │  │ 05            │────────▶│ 06            │           │
-│          │  │ INCIDENT      │◀────────│ COUNTER-      │           │
-│          │  │ RESPONSE      │  status  │ MEASURES      │           │
-│          │  │ (Activate)    │          │ (Harden)      │           │
-│          │  │ RE&CT         │          │ MITRE D3FEND  │           │
-│          │  └──────┬───────┘          └──────────────┘           │
-│          │         │ acquisition                                   │
-│          │         │ requests         findings feed back           │
-│          │         ▼                  to 02, 03, 04, 07           │
-│          │  ┌──────────────┐                 │                    │
-│          │  │ 08            │─────────────────┘                    │
-│          │  │ FORENSICS &   │                                      │
-│          │  │ DFIR          │──────────────────────────────────┐  │
-│          │  │ (Evidence)    │                                   │  │
-│          │  │ Velociraptor  │  reports, readiness               │  │
-│          │  │ Volatility 3  │──────────────────────────────┐   │  │
-│          │  └──────────────┘                               │   │  │
-│          │                                                  │   │  │
-│          └──────────────────────────────────────────────────┘   │  │
-│                                                                  │  │
-│  ┌───────────────────────────────────────────────────────────────┘  │
-│  │                                                                  │
-│  ▼  EVERLASTING BASELINE HUNT                                       │
-│  ┌────────────────────────────────────────────────────────────────┐ │
-│  │ Test → Gaps → Hypotheses → Analytics → Detections → Test      │ │
-│  │      ◀──── M3TID cycle ────▶   SOC-CMM maturity ────▶        │ │
-│  └────────────────────────────────────────────────────────────────┘ │
-│                                                                      │
-└────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Pipeline["THREAT-INFORMED DEFENSE SOC PIPELINE — M3TID Continuous Hunt Cycle"]
+        direction TB
+        M01["<b>01 GOVERNANCE</b><br/><i>Authority</i><br/>NIST CSF 2.0 · ASD · DoDCWF · CIISec"]
+        M02["<b>02 DATA DOCUMENTATION</b><br/><i>Foundation</i><br/>OSSEM DD, CDM, DM · TH Playbook"]
+        M03["<b>03 THREAT INTELLIGENCE</b><br/><i>Direction</i><br/>MITRE ATT&CK · M3TID"]
+        M04["<b>04 DETECTION ENGINEERING</b><br/><i>Codify</i><br/>DeTTECT · CAR · Sigma · CI/CD"]
+        M05["<b>05 INCIDENT RESPONSE</b><br/><i>Activate</i><br/>RE&CT Framework"]
+        M06["<b>06 COUNTERMEASURES</b><br/><i>Harden</i><br/>MITRE D3FEND"]
+        M07["<b>07 DETECTION TESTING</b><br/><i>Validate</i><br/>Atomic RT · attack_range"]
+        M08["<b>08 FORENSICS & DFIR</b><br/><i>Evidence</i><br/>Velociraptor · Volatility 3 · Plaso"]
+
+        M01 -->|"Charter, scope, assets"| M02
+        M02 -->|"Inventory, CDM, DM, quality"| M04
+        M03 -->|"Data source reqs"| M02
+        M02 -->|"Inventory, CDM, DM"| M03
+        M03 -->|"Prioritised technique list"| M04
+        M03 -->|"Threat profile"| M07
+        M04 -->|"Sigma rules"| M07
+        M07 -->|"Scores, gaps"| M04
+        M04 -->|"Alerts"| M05
+        M04 -->|"Detection gaps"| M06
+        M07 -->|"Gap tickets"| M06
+        M06 -->|"Countermeasure status"| M05
+        M05 -->|"Acquisition requests"| M08
+        M08 -->|"Findings → 02, 03, 04, 07"| M03
+        M08 -->|"Reports, readiness"| M01
+        M07 -->|"Coverage dashboard, KPIs"| M01
+        M05 -->|"Incident reports, lessons"| M01
+
+        subgraph Hunt["EVERLASTING BASELINE HUNT"]
+            Cycle["Test → Gaps → Hypotheses → Analytics → Detections → Test<br/>◀── M3TID cycle ──▶ SOC-CMM maturity ──▶"]
+        end
+
+        M07 --> Hunt
+        Hunt --> M03
+    end
 ```
 
 ---
@@ -89,21 +67,28 @@ Every module in the pipeline has explicit **inputs** (what it consumes) and **ou
 
 ### Key Feedback Loops
 
-```
-Loop 1 — Detection Improvement:  04 → 07 → 04
-  Detection rules tested → failures identified → rules improved → re-tested
-
-Loop 2 — Threat Profile Update:  03 → 04 → 07 → 03
-  Threat profile drives detections → testing validates → results re-prioritise profile
-
-Loop 3 — Incident Learning:  04 → 05 → 08 → 03 → 04
-  Alert fires → IR activates → forensics confirms → intel updated → detections improved
-
-Loop 4 — Hardening Cycle:  04 → 06 → 07 → 06
-  Detection gaps → countermeasures deployed → tested → refined
-
-Loop 5 — Data Completeness:  02 → 04 → 07 → 02
-  Data documented → detections built → testing reveals data gaps → data onboarded
+```mermaid
+flowchart LR
+    subgraph L1["Loop 1 — Detection Improvement"]
+        direction LR
+        A04a["04 Detection"] -->|"rules"| A07a["07 Testing"] -->|"gaps"| A04a
+    end
+    subgraph L2["Loop 2 — Threat Profile Update"]
+        direction LR
+        A03b["03 Intel"] -->|"techniques"| A04b["04 Detection"] -->|"rules"| A07b["07 Testing"] -->|"scores"| A03b
+    end
+    subgraph L3["Loop 3 — Incident Learning"]
+        direction LR
+        A04c["04 Detection"] -->|"alerts"| A05c["05 IR"] -->|"requests"| A08c["08 Forensics"] -->|"findings"| A03c["03 Intel"] -->|"updated profile"| A04c
+    end
+    subgraph L4["Loop 4 — Hardening Cycle"]
+        direction LR
+        A04d["04 Detection"] -->|"gaps"| A06d["06 Countermeasures"] -->|"controls"| A07d["07 Testing"] -->|"results"| A06d
+    end
+    subgraph L5["Loop 5 — Data Completeness"]
+        direction LR
+        A02e["02 Data"] -->|"CDM/DM"| A04e["04 Detection"] -->|"rules"| A07e["07 Testing"] -->|"data gaps"| A02e
+    end
 ```
 
 ---
@@ -147,37 +132,34 @@ Each pipeline module maps to one or more of the MITRE 11 Strategies for a World-
 
 This pipeline operates as an **everlasting baseline hunt** — not a linear build-once process:
 
-```
-         M3TID: Analyse Threats (Module 03)
-                    │
-                    ▼
-         Pre-Hunt: Data Management (Module 02)
-         Pre-Hunt: Hypothesis Generation (Module 03 → CTI)
-         Pre-Hunt: Analytics Development (Module 04)
-                    │
-              ┌─────┴─────┐
-              ▼           ▼
-        EXPLICIT       IMPLICIT
-        HUNT           HUNT
-        (Analyst)      (Detection CI/CD)
-              │           │
-              ▼           ▼
-        FINDINGS      ALERTS ──▶ INCIDENTS (Module 05)
-              │           │
-              └─────┬─────┘
-                    ▼
-         M3TID: Assess Defenses (Module 07 Testing)
-                    │
-                    ▼
-         M3TID: Identify Gaps (DeTTECT + Data Gaps)
-                    │
-                    ▼
-         M3TID: Improve (Module 04 + 05 + 06)
-                    │
-                    ▼
-         M3TID: Share (Community, ISACs)
-                    │
-                    └──────▶ REPEAT (the cycle never stops)
+```mermaid
+flowchart TD
+    Analyse["<b>M3TID: Analyse Threats</b><br/>(Module 03)"]
+    PreHunt["<b>Pre-Hunt</b><br/>Data Management (Module 02)<br/>Hypothesis Generation (Module 03 → CTI)<br/>Analytics Development (Module 04)"]
+    Explicit["<b>EXPLICIT HUNT</b><br/>(Analyst)"]
+    Implicit["<b>IMPLICIT HUNT</b><br/>(Detection CI/CD)"]
+    Findings["Findings"]
+    Alerts["Alerts"]
+    Incidents["Incidents<br/>(Module 05)"]
+    Assess["<b>M3TID: Assess Defenses</b><br/>(Module 07 Testing)"]
+    Gaps["<b>M3TID: Identify Gaps</b><br/>(DeTTECT + Data Gaps)"]
+    Improve["<b>M3TID: Improve</b><br/>(Module 04 + 05 + 06)"]
+    Share["<b>M3TID: Share</b><br/>(Community, ISACs)"]
+    Repeat(["REPEAT — the cycle never stops"])
+
+    Analyse --> PreHunt
+    PreHunt --> Explicit
+    PreHunt --> Implicit
+    Explicit --> Findings
+    Implicit --> Alerts
+    Alerts --> Incidents
+    Findings --> Assess
+    Alerts --> Assess
+    Assess --> Gaps
+    Gaps --> Improve
+    Improve --> Share
+    Share --> Repeat
+    Repeat --> Analyse
 ```
 
 For the full methodology, see [references/m3tid-continuous-hunt.md](references/m3tid-continuous-hunt.md).
@@ -214,26 +196,35 @@ For maturity criteria per pipeline module, see [references/maturity-model.md](re
 
 ### Recommended Progression
 
-```
-Phase 1: Foundation (SOC-CMM Level 1 → 2)
-├── 01-Governance    → Establish charter, roles, authority
-├── 02-Data-Docs     → Inventory and document data sources (OSSEM-DD)
-└── 03-Threat-Intel  → Build initial ATT&CK threat profile
+```mermaid
+flowchart TD
+    subgraph P1["<b>Phase 1: Foundation</b> (SOC-CMM Level 1 → 2)"]
+        direction LR
+        P1A["01-Governance<br/>Establish charter, roles, authority"]
+        P1B["02-Data-Docs<br/>Inventory and document data sources (OSSEM-DD)"]
+        P1C["03-Threat-Intel<br/>Build initial ATT&CK threat profile"]
+    end
+    subgraph P2["<b>Phase 2: Standardise</b> (SOC-CMM Level 2 → 3 — maximum pipeline value)"]
+        direction LR
+        P2A["02-Data-Docs<br/>Standardise (OSSEM-CDM) and model (OSSEM-DM)"]
+        P2B["03-Threat-Intel<br/>Generate hunt hypotheses from threat profile (M3TID)"]
+        P2C["04-Detection-Eng<br/>Build detections, establish CI/CD pipeline"]
+        P2D["05-IR<br/>Create RE&CT playbooks for priority techniques"]
+    end
+    subgraph P3["<b>Phase 3: Harden & Validate</b> (SOC-CMM Level 3 solidified)"]
+        direction LR
+        P3A["06-Countermeasures<br/>Map and deploy D3FEND defensive techniques"]
+        P3B["07-Testing<br/>Validate detection coverage with Atomic RT"]
+        P3C["08-Forensics<br/>Establish forensic readiness and DFIR capability"]
+        P3D["SOC-CMM Assessment<br/>Baseline all five domains"]
+    end
+    subgraph P4["<b>Phase 4: Continuous Hunt</b> (SOC-CMM Level 3 → 4+)"]
+        direction LR
+        P4A(["Everlasting cycle:<br/>Hunt → Detect → Respond → Test → Improve"])
+    end
 
-Phase 2: Standardise (SOC-CMM Level 2 → 3 — maximum pipeline value)
-├── 02-Data-Docs     → Standardise (OSSEM-CDM) and model (OSSEM-DM)
-├── 03-Threat-Intel  → Generate hunt hypotheses from threat profile (M3TID)
-├── 04-Detection-Eng → Build detections, establish CI/CD pipeline
-└── 05-IR            → Create RE&CT playbooks for priority techniques
-
-Phase 3: Harden & Validate (SOC-CMM Level 3 solidified)
-├── 06-Countermeasures → Map and deploy D3FEND defensive techniques
-├── 07-Testing         → Validate detection coverage with Atomic RT
-├── 08-Forensics       → Establish forensic readiness and DFIR capability
-└── SOC-CMM Assessment → Baseline all five domains
-
-Phase 4: Continuous Hunt (SOC-CMM Level 3 → 4+)
-└── Everlasting cycle: Hunt → Detect → Respond → Test → Improve
+    P1 --> P2 --> P3 --> P4
+    P4 -.->|"cycle repeats"| P1
 ```
 
 ---

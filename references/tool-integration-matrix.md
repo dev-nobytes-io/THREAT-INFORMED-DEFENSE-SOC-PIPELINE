@@ -286,53 +286,55 @@
 
 ## Integration Architecture
 
-```
-                        TOOL INTEGRATION ARCHITECTURE
+```mermaid
+flowchart TD
+    subgraph DATA["DATA PLANE"]
+        D1["Log Sources\n(Agents, Syslog, API)"]
+        D2["Collector\n(Elastic Agent, Fluentd, Cribl)"]
+        D3["CDM Normalisation\n(OSSEM-CDM / ECS / CIM / ASIM / OCSF)"]
+        D4["SIEM Storage\n(Elastic / Splunk / Wazuh / Graylog)"]
+        D1 --> D2 --> D3 --> D4
+    end
 
- ┌──────────────────────────────────────────────────────────────────────┐
- │                          DATA PLANE                                   │
- │                                                                       │
- │  Log Sources → [Collector] → [CDM Normalisation] → [SIEM Storage]   │
- │  (Agents,      (Elastic      (OSSEM-CDM /          (Elastic /        │
- │   Syslog,       Agent,        ECS / CIM /           Splunk /         │
- │   API)          Fluentd,      ASIM / OCSF)          Wazuh /         │
- │                 Cribl)                               Graylog)        │
- └────────────────────────────────┬─────────────────────────────────────┘
-                                  │
- ┌────────────────────────────────┴─────────────────────────────────────┐
- │                       INTELLIGENCE PLANE                              │
- │                                                                       │
- │  Threat Feeds → [TIP] ──────────→ [ATT&CK Profiling] → [DeTTECT]  │
- │  (STIX/TAXII)   (OpenCTI /        (Navigator /          (Coverage   │
- │                   MISP)             Workbench)            Scoring)   │
- └────────────────────────────────┬─────────────────────────────────────┘
-                                  │
- ┌────────────────────────────────┴─────────────────────────────────────┐
- │                       DETECTION PLANE                                 │
- │                                                                       │
- │  [DeTTECT Gaps] → [Sigma Rules] → [sigma-cli] → [SIEM Rules]       │
- │                     (Git repo)     (Convert)      (Deploy)            │
- │                         │                                             │
- │                    CI/CD Pipeline (GitHub Actions / GitLab CI)         │
- └────────────────────────────────┬─────────────────────────────────────┘
-                                  │
- ┌────────────────────────────────┴─────────────────────────────────────┐
- │                       RESPONSE PLANE                                  │
- │                                                                       │
- │  SIEM Alert → [SOAR] → [Playbook] → [Containment] → [Case Mgmt]    │
- │               (Shuffle/  (RE&CT)     (EDR API,       (TheHive /      │
- │                Tines/                 Firewall API)    DFIR-IRIS)     │
- │                TheHive+Cortex)                                        │
- └────────────────────────────────┬─────────────────────────────────────┘
-                                  │
- ┌────────────────────────────────┴─────────────────────────────────────┐
- │                       VALIDATION PLANE                                │
- │                                                                       │
- │  [Adversary Sim] → [Detection Check] → [Score Update] → [Report]    │
- │  (Atomic RT /      (Query SIEM for     (DeTTECT YAML   (VECTR /     │
- │   Caldera /         expected alert)      update)          Dashboard)  │
- │   attack_range)                                                       │
- └──────────────────────────────────────────────────────────────────────┘
+    subgraph INTEL["INTELLIGENCE PLANE"]
+        I1["Threat Feeds\n(STIX/TAXII)"]
+        I2["TIP\n(OpenCTI / MISP)"]
+        I3["ATT&CK Profiling\n(Navigator / Workbench)"]
+        I4["DeTTECT\n(Coverage Scoring)"]
+        I1 --> I2 --> I3 --> I4
+    end
+
+    subgraph DETECT["DETECTION PLANE"]
+        DE1["DeTTECT Gaps"]
+        DE2["Sigma Rules\n(Git repo)"]
+        DE3["sigma-cli\n(Convert)"]
+        DE4["SIEM Rules\n(Deploy)"]
+        DE5["CI/CD Pipeline\n(GitHub Actions / GitLab CI)"]
+        DE1 --> DE2 --> DE3 --> DE4
+        DE2 --> DE5
+    end
+
+    subgraph RESPONSE["RESPONSE PLANE"]
+        R1["SIEM Alert"]
+        R2["SOAR\n(Shuffle / Tines / TheHive+Cortex)"]
+        R3["Playbook\n(RE&CT)"]
+        R4["Containment\n(EDR API, Firewall API)"]
+        R5["Case Mgmt\n(TheHive / DFIR-IRIS)"]
+        R1 --> R2 --> R3 --> R4 --> R5
+    end
+
+    subgraph VALID["VALIDATION PLANE"]
+        V1["Adversary Sim\n(Atomic RT / Caldera / attack_range)"]
+        V2["Detection Check\n(Query SIEM for expected alert)"]
+        V3["Score Update\n(DeTTECT YAML update)"]
+        V4["Report\n(VECTR / Dashboard)"]
+        V1 --> V2 --> V3 --> V4
+    end
+
+    DATA --> INTEL
+    INTEL --> DETECT
+    DETECT --> RESPONSE
+    RESPONSE --> VALID
 ```
 
 ---

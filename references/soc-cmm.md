@@ -21,34 +21,36 @@ SOC-CMM is the primary maturity framework for this pipeline because it:
 
 ## SOC-CMM Domain Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        SOC CAPABILITY MATURITY MODEL                     │
-│                                                                          │
-│   ┌─────────────────────────────────────────────────────────────────┐   │
-│   │                        BUSINESS                                  │   │
-│   │  Governance · Budget · Strategy · Stakeholders · Compliance      │   │
-│   │  Risk Management · Business Alignment                            │   │
-│   └──────────────────────────┬──────────────────────────────────────┘   │
-│                              │                                           │
-│   ┌──────────────┐   ┌──────┴──────┐   ┌──────────────┐                │
-│   │    PEOPLE     │   │   PROCESS   │   │  TECHNOLOGY   │                │
-│   │              │   │             │   │              │                │
-│   │ Staffing     │   │ Procedures  │   │ SIEM         │                │
-│   │ Training     │   │ Use Cases   │   │ Log Mgmt     │                │
-│   │ Careers      │   │ Incidents   │   │ SOAR         │                │
-│   │ Knowledge    │   │ Analytics   │   │ Endpoint     │                │
-│   │ Awareness    │   │ Automation  │   │ Network      │                │
-│   │ Collaboration│   │ Change Mgmt │   │ TIP          │                │
-│   └──────┬───────┘   └──────┬──────┘   └──────┬───────┘                │
-│          │                  │                  │                         │
-│   ┌──────┴──────────────────┴──────────────────┴───────┐                │
-│   │                      SERVICES                        │                │
-│   │  Monitoring · Incident Response · Threat Intel       │                │
-│   │  Threat Hunting · Vulnerability Mgmt · Forensics     │                │
-│   │  Advisory & Reporting                                │                │
-│   └──────────────────────────────────────────────────────┘                │
-└─────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph SOC["SOC CAPABILITY MATURITY MODEL"]
+        subgraph BUS["BUSINESS"]
+            B1["Governance · Budget · Strategy · Stakeholders · Compliance\nRisk Management · Business Alignment"]
+        end
+
+        subgraph PPT[" "]
+            subgraph PEO["PEOPLE"]
+                P1["Staffing\nTraining\nCareers\nKnowledge\nAwareness\nCollaboration"]
+            end
+            subgraph PRO["PROCESS"]
+                PR1["Procedures\nUse Cases\nIncidents\nAnalytics\nAutomation\nChange Mgmt"]
+            end
+            subgraph TEC["TECHNOLOGY"]
+                T1["SIEM\nLog Mgmt\nSOAR\nEndpoint\nNetwork\nTIP"]
+            end
+        end
+
+        subgraph SVC["SERVICES"]
+            S1["Monitoring · Incident Response · Threat Intel\nThreat Hunting · Vulnerability Mgmt · Forensics\nAdvisory & Reporting"]
+        end
+
+        B1 --> PEO
+        B1 --> PRO
+        B1 --> TEC
+        P1 --> S1
+        PR1 --> S1
+        T1 --> S1
+    end
 ```
 
 ---

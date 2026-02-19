@@ -27,36 +27,20 @@ DeTTECT (Detect Tactics, Techniques & Combat Threats) maps your data sources and
 
 ### DeTTECT Workflow in the Pipeline
 
-```
-Module 02 (Data)              Module 03 (Intel)
-Data Source Inventory    +    Threat Profile
-        │                          │
-        ▼                          ▼
-┌──────────────────────────────────────────────┐
-│              DeTTECT Framework               │
-│                                              │
-│  1. data_sources.yaml                        │
-│     - Map collected data sources to ATT&CK   │
-│     - Score data quality per source          │
-│                                              │
-│  2. techniques_detection.yaml                │
-│     - Map existing detections to techniques  │
-│     - Score detection quality                │
-│                                              │
-│  3. group_mapping                            │
-│     - Import threat group techniques         │
-│     - Compare vs. detection coverage         │
-│                                              │
-│  OUTPUT: ATT&CK Navigator layers             │
-│     - Visibility coverage layer              │
-│     - Detection coverage layer               │
-│     - Threat group overlay                   │
-│     - GAP ANALYSIS (red = uncovered)         │
-└──────────────────────────────────────────────┘
-        │
-        ▼
-Detection Engineering Backlog
-(Prioritized by gap analysis)
+```mermaid
+flowchart TD
+    M02["Module 02 (Data)\nData Source Inventory"] --> DeTTECT
+    M03["Module 03 (Intel)\nThreat Profile"] --> DeTTECT
+
+    subgraph DeTTECT["DeTTECT Framework"]
+        DS["1. data_sources.yaml\n- Map collected data sources to ATT&CK\n- Score data quality per source"]
+        TD["2. techniques_detection.yaml\n- Map existing detections to techniques\n- Score detection quality"]
+        GM["3. group_mapping\n- Import threat group techniques\n- Compare vs. detection coverage"]
+        OUT["OUTPUT: ATT&CK Navigator layers\n- Visibility coverage layer\n- Detection coverage layer\n- Threat group overlay\n- GAP ANALYSIS (red = uncovered)"]
+        DS --> TD --> GM --> OUT
+    end
+
+    DeTTECT --> Backlog["Detection Engineering Backlog\n(Prioritized by gap analysis)"]
 ```
 
 ### DeTTECT YAML Templates
@@ -191,47 +175,32 @@ The Cyber Analytics Repository (CAR) is a collection of analytics developed by M
 
 Each CAR analytic provides:
 
-```
-CAR-2024-01-001: Suspicious PowerShell Execution
-├── ATT&CK Mapping: T1059.001
-├── Data Model: process (fields: exe, command_line, parent_exe)
-├── Platforms: Windows
-├── Implementation:
-│   ├── Pseudocode (platform-agnostic)
-│   ├── Sigma rule
-│   ├── Splunk SPL
-│   └── Elastic KQL
-├── Unit Tests: defined inputs → expected outputs
-└── Coverage: which sub-technique variants are handled
+```mermaid
+flowchart TD
+    CAR["CAR-2024-01-001:\nSuspicious PowerShell Execution"]
+    CAR --> ATT["ATT&CK Mapping: T1059.001"]
+    CAR --> DM["Data Model: process\n(fields: exe, command_line, parent_exe)"]
+    CAR --> PLAT["Platforms: Windows"]
+    CAR --> IMPL["Implementation"]
+    IMPL --> PSEUDO["Pseudocode (platform-agnostic)"]
+    IMPL --> SIGMA["Sigma rule"]
+    IMPL --> SPL["Splunk SPL"]
+    IMPL --> KQL["Elastic KQL"]
+    CAR --> UT["Unit Tests:\ndefined inputs → expected outputs"]
+    CAR --> COV["Coverage:\nwhich sub-technique variants are handled"]
 ```
 
 ### Using CAR in the Detection Lifecycle
 
-```
-1. IDENTIFY          Module 03 threat profile flags T1059.001 as Critical
-       │
-       ▼
-2. SEARCH CAR        Find CAR analytics covering T1059.001
-       │             → CAR-2013-04-002: Quick execution of a series of
-       │               suspicious commands
-       │             → CAR-2014-04-003: Powershell Execution
-       ▼
-3. EVALUATE          Review analytic against your environment:
-       │             - Do you have the required data? (check Module 02)
-       │             - Is the pseudocode logic applicable?
-       │             - What is the expected false positive rate?
-       ▼
-4. IMPLEMENT         Translate to your SIEM query language:
-       │             - Sigma → SIEM-native via sigma-cli
-       │             - Or use the provided SPL/KQL directly
-       ▼
-5. TEST              Validate with Atomic Red Team (see below)
-       │
-       ▼
-6. DEPLOY            Push to SIEM, tune thresholds, document
-       │
-       ▼
-7. SCORE             Update DeTTECT techniques_detection.yaml
+```mermaid
+flowchart TD
+    S1["1. IDENTIFY\nModule 03 threat profile flags\nT1059.001 as Critical"]
+    S1 --> S2["2. SEARCH CAR\nFind CAR analytics covering T1059.001\n→ CAR-2013-04-002: Quick execution of\na series of suspicious commands\n→ CAR-2014-04-003: Powershell Execution"]
+    S2 --> S3["3. EVALUATE\nReview analytic against your environment:\n- Do you have the required data? (check Module 02)\n- Is the pseudocode logic applicable?\n- What is the expected false positive rate?"]
+    S3 --> S4["4. IMPLEMENT\nTranslate to your SIEM query language:\n- Sigma → SIEM-native via sigma-cli\n- Or use the provided SPL/KQL directly"]
+    S4 --> S5["5. TEST\nValidate with Atomic Red Team"]
+    S5 --> S6["6. DEPLOY\nPush to SIEM, tune thresholds, document"]
+    S6 --> S7["7. SCORE\nUpdate DeTTECT techniques_detection.yaml"]
 ```
 
 ### CAR-to-Sigma Workflow
@@ -281,20 +250,15 @@ Atomic Red Team provides per-technique test procedures. In this module, Atomic t
 
 ### Detection Development with Atomic Tests
 
-```
-For each priority technique:
-
-1. Write or import detection analytic (from CAR, custom, or community)
-2. Find corresponding Atomic test:
-   → atomic-red-team/atomics/T1059.001/T1059.001.yaml
-3. Run the Atomic test in a development environment
-4. Verify the detection fires:
-   - Did the SIEM alert trigger?
-   - Did the right fields populate?
-   - Is the alert severity correct?
-   - What is the false positive rate on baseline traffic?
-5. Iterate until the detection reliably catches the test
-6. Document results in DeTTECT score logbook
+```mermaid
+flowchart TD
+    START["For each priority technique"] --> S1
+    S1["1. Write or import detection analytic\n(from CAR, custom, or community)"]
+    S1 --> S2["2. Find corresponding Atomic test\n→ atomic-red-team/atomics/T1059.001/T1059.001.yaml"]
+    S2 --> S3["3. Run the Atomic test\nin a development environment"]
+    S3 --> S4["4. Verify the detection fires:\n- Did the SIEM alert trigger?\n- Did the right fields populate?\n- Is the alert severity correct?\n- What is the FP rate on baseline traffic?"]
+    S4 --> S5["5. Iterate until the detection\nreliably catches the test"]
+    S5 --> S6["6. Document results in\nDeTTECT score logbook"]
 ```
 
 ### Atomic Test Reference Format
@@ -357,14 +321,12 @@ detections/
 
 ### Development Workflow
 
-```
-┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
-│  CREATE   │──▶│  TEST    │──▶│  REVIEW  │──▶│  DEPLOY  │──▶│  SCORE   │
-│           │   │          │   │          │   │          │   │          │
-│ Write     │   │ Run      │   │ Peer     │   │ Push to  │   │ Update   │
-│ Sigma     │   │ Atomic   │   │ review   │   │ SIEM via │   │ DeTTECT  │
-│ rule      │   │ test     │   │ the rule │   │ CI/CD    │   │ score    │
-└──────────┘   └──────────┘   └──────────┘   └──────────┘   └──────────┘
+```mermaid
+flowchart LR
+    CREATE["CREATE\nWrite Sigma rule"] --> TEST["TEST\nRun Atomic test"]
+    TEST --> REVIEW["REVIEW\nPeer review the rule"]
+    REVIEW --> DEPLOY["DEPLOY\nPush to SIEM via CI/CD"]
+    DEPLOY --> SCORE["SCORE\nUpdate DeTTECT score"]
 ```
 
 ---

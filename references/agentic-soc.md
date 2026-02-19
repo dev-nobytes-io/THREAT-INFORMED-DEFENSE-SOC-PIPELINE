@@ -38,43 +38,32 @@ The traditional SOC suffers from three structural problems that technology alone
 
 ### Six SOC Agents
 
-```
-                         AGENTIC SOC ARCHITECTURE
+```mermaid
+flowchart TD
+    ORCH["<b>ORCHESTRATION LAYER</b><br/>Routes tasks to agents<br/>Enforces human checkpoints<br/>Manages agent context<br/>Audit logs all actions"]
 
-                    ┌──────────────────────────────┐
-                    │       ORCHESTRATION LAYER      │
-                    │                                │
-                    │  Routes tasks to agents        │
-                    │  Enforces human checkpoints    │
-                    │  Manages agent context          │
-                    │  Audit logs all actions         │
-                    └──────────┬───────────────────┘
-                               │
-        ┌──────────┬───────────┼───────────┬──────────┬───────────┐
-        ▼          ▼           ▼           ▼          ▼           ▼
-  ┌──────────┐┌──────────┐┌──────────┐┌──────────┐┌──────────┐┌──────────┐
-  │  ALERT   ││   HUNT   ││DETECTION ││   CTI    ││ FORENSIC ││REPORTING │
-  │  TRIAGE  ││HYPOTHESIS││SYNTHESIS ││ENRICHMENT││ TRIAGE   ││          │
-  │  AGENT   ││  AGENT   ││  AGENT   ││  AGENT   ││  AGENT   ││  AGENT   │
-  │          ││          ││          ││          ││          ││          │
-  │ Filters  ││Generates ││ Drafts   ││ Enriches ││ Parses   ││Generates │
-  │ enriches ││hunt leads││detection ││ IOCs,    ││artefacts ││incident  │
-  │ & scores ││from data ││rules     ││ maps to  ││& builds  ││reports,  │
-  │ alerts   ││& intel   ││from      ││ ATT&CK   ││initial   ││dashboards│
-  │          ││          ││findings  ││          ││timeline  ││& briefs  │
-  └────┬─────┘└────┬─────┘└────┬─────┘└────┬─────┘└────┬─────┘└────┬─────┘
-       │           │           │           │           │           │
-       └───────────┴───────────┴───────────┴───────────┴───────────┘
-                               │
-                    ┌──────────┴───────────────────┐
-                    │     HUMAN DECISION POINTS      │
-                    │                                │
-                    │  Analysts approve, override,   │
-                    │  or escalate agent outputs      │
-                    │                                │
-                    │  ALL containment/response       │
-                    │  actions require human approval │
-                    └────────────────────────────────┘
+    ORCH --> ALERT
+    ORCH --> HUNT
+    ORCH --> DETECT
+    ORCH --> CTI
+    ORCH --> FORENSIC
+    ORCH --> REPORT
+
+    ALERT["<b>ALERT TRIAGE AGENT</b><br/>Filters, enriches<br/>& scores alerts"]
+    HUNT["<b>HUNT HYPOTHESIS AGENT</b><br/>Generates hunt leads<br/>from data & intel"]
+    DETECT["<b>DETECTION SYNTHESIS AGENT</b><br/>Drafts detection rules<br/>from findings"]
+    CTI["<b>CTI ENRICHMENT AGENT</b><br/>Enriches IOCs,<br/>maps to ATT&CK"]
+    FORENSIC["<b>FORENSIC TRIAGE AGENT</b><br/>Parses artefacts<br/>& builds initial timeline"]
+    REPORT["<b>REPORTING AGENT</b><br/>Generates incident reports,<br/>dashboards & briefs"]
+
+    ALERT --> HUMAN
+    HUNT --> HUMAN
+    DETECT --> HUMAN
+    CTI --> HUMAN
+    FORENSIC --> HUMAN
+    REPORT --> HUMAN
+
+    HUMAN["<b>HUMAN DECISION POINTS</b><br/>Analysts approve, override, or escalate agent outputs<br/>ALL containment/response actions require human approval"]
 ```
 
 ---
@@ -241,85 +230,99 @@ tags:
 
 ### Tier 1 Analyst + Alert Triage Agent
 
-```
-BEFORE AI AUGMENTATION                    AFTER AI AUGMENTATION
-──────────────────────                    ─────────────────────
+```mermaid
+flowchart LR
+    subgraph BEFORE["Before AI Augmentation"]
+        direction TB
+        B1["Analyst manually triages every alert"]
+        B2["~500 alerts/shift<br/>~60% obvious FP<br/>~20% need basic enrichment<br/>~20% need investigation"]
+        B3["Most time: lookup, correlate,<br/>enrich, close FP"]
+        B4["Little time for deep investigation"]
+        B1 --> B2 --> B3 --> B4
+    end
 
-Analyst manually triages                  Agent pre-triages all alerts
-every alert                               with enrichment and TP scoring
-     │                                         │
-     ▼                                         ▼
-~500 alerts/shift                         Analyst reviews agent output
-~60% are obvious FP                       for ~200 alerts (FP auto-noted)
-~20% need basic enrichment                     │
-~20% need investigation                        ▼
-     │                                    Focus time on 100 investigation-
-     ▼                                    worthy alerts with context
-Most time: lookup, correlate,             already assembled
-enrich, close FP                               │
-     │                                         ▼
-     ▼                                    Deeper investigation quality
-Little time for deep                      Better escalation decisions
-investigation                             More consistent outcomes
+    subgraph AFTER["After AI Augmentation"]
+        direction TB
+        A1["Agent pre-triages all alerts<br/>with enrichment and TP scoring"]
+        A2["Analyst reviews agent output<br/>for ~200 alerts — FP auto-noted"]
+        A3["Focus time on 100 investigation-worthy<br/>alerts with context already assembled"]
+        A4["Deeper investigation quality<br/>Better escalation decisions<br/>More consistent outcomes"]
+        A1 --> A2 --> A3 --> A4
+    end
 
-Time allocation shift:
-  Lookup/enrich: 50% → 10%    (agent handles)
-  Investigation: 20% → 50%    (analyst focus)
-  Documentation: 20% → 10%    (agent assists)
-  Learning:      10% → 30%    (freed capacity)
+    BEFORE ~~~ AFTER
 ```
+
+**Time allocation shift:**
+| Activity | Before | After | Reason |
+|---|---|---|---|
+| Lookup/enrich | 50% | 10% | Agent handles |
+| Investigation | 20% | 50% | Analyst focus |
+| Documentation | 20% | 10% | Agent assists |
+| Learning | 10% | 30% | Freed capacity |
 
 ### Detection Engineer + Detection Synthesis Agent
 
-```
-BEFORE                                    AFTER
-──────                                    ─────
+```mermaid
+flowchart LR
+    subgraph BEFORE["Before"]
+        direction TB
+        B1["Engineer manually researches technique,<br/>builds detection from scratch"]
+        B2["3-5 days per detection<br/>— research, write, test, tune"]
+        B3["5-10 detections per sprint"]
+        B1 --> B2 --> B3
+    end
 
-Engineer manually researches              Agent drafts detection from
-technique, builds detection               hunt finding or technique intel
-from scratch                                   │
-     │                                         ▼
-3-5 days per detection                    Engineer reviews draft, tunes,
-(research → write → test → tune)          tests, and deploys
-     │                                         │
-     ▼                                         ▼
-5-10 detections per sprint                1-2 days per detection
-                                          (review → test → tune)
-                                               │
-                                               ▼
-                                          10-20 detections per sprint
+    subgraph AFTER["After"]
+        direction TB
+        A1["Agent drafts detection from<br/>hunt finding or technique intel"]
+        A2["Engineer reviews draft,<br/>tunes, tests, and deploys"]
+        A3["1-2 days per detection<br/>— review, test, tune"]
+        A4["10-20 detections per sprint"]
+        A1 --> A2 --> A3 --> A4
+    end
 
-Engineer's focus shifts:
-  Writing from scratch: 60% → 20%  (agent drafts)
-  Testing & tuning:    20% → 40%  (core value)
-  Research & strategy: 10% → 30%  (freed capacity)
-  Review & mentoring:  10% → 10%  (maintained)
+    BEFORE ~~~ AFTER
 ```
+
+**Engineer's focus shifts:**
+| Activity | Before | After | Reason |
+|---|---|---|---|
+| Writing from scratch | 60% | 20% | Agent drafts |
+| Testing & tuning | 20% | 40% | Core value |
+| Research & strategy | 10% | 30% | Freed capacity |
+| Review & mentoring | 10% | 10% | Maintained |
 
 ### Threat Hunter + Hunt Hypothesis Agent
 
-```
-BEFORE                                    AFTER
-──────                                    ─────
+```mermaid
+flowchart LR
+    subgraph BEFORE["Before"]
+        direction TB
+        B1["Hunter manually identifies coverage gaps,<br/>generates hypotheses, develops queries"]
+        B2["Time-consuming hypothesis development<br/>limits hunt volume"]
+        B3["2-4 hunts per quarter"]
+        B1 --> B2 --> B3
+    end
 
-Hunter manually identifies                Agent generates prioritised
-coverage gaps, generates                  hypothesis backlog weekly
-hypotheses, develops queries                   │
-     │                                         ▼
-Time-consuming hypothesis                 Hunter selects hypotheses,
-development limits hunt volume            focuses on execution and
-     │                                    complex analysis
-     ▼                                         │
-2-4 hunts per quarter                          ▼
-                                          4-8 hunts per quarter
-                                          with pre-built query templates
+    subgraph AFTER["After"]
+        direction TB
+        A1["Agent generates prioritised<br/>hypothesis backlog weekly"]
+        A2["Hunter selects hypotheses, focuses<br/>on execution and complex analysis"]
+        A3["4-8 hunts per quarter<br/>with pre-built query templates"]
+        A1 --> A2 --> A3
+    end
 
-Hunter's focus shifts:
-  Hypothesis generation: 40% → 10%  (agent generates)
-  Hunt execution:        30% → 50%  (core value)
-  Analysis & reporting:  20% → 25%  (deeper analysis)
-  Detection promotion:   10% → 15%  (hunt-to-detection)
+    BEFORE ~~~ AFTER
 ```
+
+**Hunter's focus shifts:**
+| Activity | Before | After | Reason |
+|---|---|---|---|
+| Hypothesis generation | 40% | 10% | Agent generates |
+| Hunt execution | 30% | 50% | Core value |
+| Analysis & reporting | 20% | 25% | Deeper analysis |
+| Detection promotion | 10% | 15% | Hunt-to-detection |
 
 ---
 
@@ -327,39 +330,39 @@ Hunter's focus shifts:
 
 ### Agent Orchestration Pattern
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                     ORCHESTRATION LAYER                            │
-│                                                                    │
-│  ┌────────────────────────────────────────────────────────────┐  │
-│  │                    TASK ROUTER                               │  │
-│  │                                                              │  │
-│  │  Event → Classify → Route to Agent(s) → Collect Output     │  │
-│  │                                          → Human Review     │  │
-│  └──────────────┬─────────────────────────┬───────────────────┘  │
-│                 │                         │                       │
-│  ┌──────────────┴──────────┐  ┌──────────┴────────────────────┐ │
-│  │    CONTEXT MANAGER       │  │     GUARDRAILS ENGINE          │ │
-│  │                          │  │                                │ │
-│  │  Maintains shared state: │  │  Enforces:                    │ │
-│  │  - Current incidents     │  │  - No autonomous containment  │ │
-│  │  - Active investigations │  │  - No production deployment   │ │
-│  │  - Threat context        │  │  - No external communication  │ │
-│  │  - Agent outputs         │  │  - Confidence thresholds      │ │
-│  │  - Human decisions       │  │  - Rate limiting              │ │
-│  │                          │  │  - Audit logging (all actions)│ │
-│  └──────────────────────────┘  └────────────────────────────────┘ │
-│                                                                    │
-│  ┌────────────────────────────────────────────────────────────┐  │
-│  │                    TOOL CONNECTORS                           │  │
-│  │                                                              │  │
-│  │  SIEM API    TIP API    EDR API    Case Mgmt    Git Repo   │  │
-│  │  (Read)      (Read)     (Read)     (Read/Write) (Read)     │  │
-│  │                                                              │  │
-│  │  Note: Write access ONLY for case management (create notes, │  │
-│  │  update fields). All other writes require human approval.   │  │
-│  └────────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph ORCH["ORCHESTRATION LAYER"]
+        direction TB
+
+        subgraph ROUTER["TASK ROUTER"]
+            R1["Event"] --> R2["Classify"] --> R3["Route to Agent#40;s#41;"] --> R4["Collect Output"]
+            R4 --> R5["Human Review"]
+        end
+
+        ROUTER --> CM
+        ROUTER --> GE
+
+        subgraph CM["CONTEXT MANAGER"]
+            CM1["Maintains shared state:<br/>- Current incidents<br/>- Active investigations<br/>- Threat context<br/>- Agent outputs<br/>- Human decisions"]
+        end
+
+        subgraph GE["GUARDRAILS ENGINE"]
+            GE1["Enforces:<br/>- No autonomous containment<br/>- No production deployment<br/>- No external communication<br/>- Confidence thresholds<br/>- Rate limiting<br/>- Audit logging #40;all actions#41;"]
+        end
+
+        CM ~~~ TOOLS
+        GE ~~~ TOOLS
+
+        subgraph TOOLS["TOOL CONNECTORS"]
+            T1["SIEM API<br/>#40;Read#41;"]
+            T2["TIP API<br/>#40;Read#41;"]
+            T3["EDR API<br/>#40;Read#41;"]
+            T4["Case Mgmt<br/>#40;Read/Write#41;"]
+            T5["Git Repo<br/>#40;Read#41;"]
+            NOTE["Note: Write access ONLY for case management<br/>#40;create notes, update fields#41;.<br/>All other writes require human approval."]
+        end
+    end
 ```
 
 ### Guardrails — What Agents CANNOT Do

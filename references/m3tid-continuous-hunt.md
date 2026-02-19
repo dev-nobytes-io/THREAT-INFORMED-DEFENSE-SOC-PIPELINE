@@ -16,41 +16,21 @@
 
 ### M3TID Cycle
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                         M3TID CONTINUOUS CYCLE                        │
-│                                                                       │
-│    ┌───────────────┐                          ┌───────────────┐      │
-│    │  1. ANALYSE    │    Threat intelligence   │  5. SHARE      │      │
-│    │  THREATS       │    identifies adversary   │  FINDINGS      │      │
-│    │                │◀──── behaviours relevant  │                │      │
-│    │  ATT&CK-mapped │    to your environment    │  Community,    │      │
-│    │  threat profile │                          │  ISACs, peers  │      │
-│    └───────┬───────┘                          └───────▲───────┘      │
-│            │                                          │               │
-│            ▼                                          │               │
-│    ┌───────────────┐                          ┌───────┴───────┐      │
-│    │  2. ASSESS     │                          │  4. IMPROVE    │      │
-│    │  DEFENSES      │                          │  DEFENSES      │      │
-│    │                │                          │                │      │
-│    │  Map current   │                          │  New detections│      │
-│    │  detection &   │                          │  New playbooks │      │
-│    │  prevention    │                          │  New counters  │      │
-│    │  coverage      │                          │  Updated hunts │      │
-│    └───────┬───────┘                          └───────▲───────┘      │
-│            │                                          │               │
-│            ▼                                          │               │
-│    ┌───────────────┐                          ┌───────┴───────┐      │
-│    │  3. IDENTIFY   │──────────────────────── │  3b. TEST      │      │
-│    │  GAPS          │    Gaps drive testing,   │  DEFENSES      │      │
-│    │                │    hunting, and          │                │      │
-│    │  Coverage gaps │    engineering           │  Atomic RT,    │      │
-│    │  Data gaps     │                          │  attack_range, │      │
-│    │  Process gaps  │                          │  purple team   │      │
-│    └───────────────┘                          └───────────────┘      │
-│                                                                       │
-│              ────── This cycle never stops ──────                     │
-└──────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A["1. ANALYSE THREATS\nATT&CK-mapped threat profile"]
+    B["2. ASSESS DEFENSES\nMap current detection &\nprevention coverage"]
+    C["3. IDENTIFY GAPS\nCoverage gaps\nData gaps\nProcess gaps"]
+    D["3b. TEST DEFENSES\nAtomic RT, attack_range,\npurple team"]
+    E["4. IMPROVE DEFENSES\nNew detections\nNew playbooks\nNew counters\nUpdated hunts"]
+    F["5. SHARE FINDINGS\nCommunity, ISACs, peers"]
+
+    A -->|"Threat intelligence identifies\nadversary behaviours relevant\nto your environment"| B
+    B --> C
+    C -->|"Gaps drive testing,\nhunting, and engineering"| D
+    D --> E
+    E --> F
+    F -->|"This cycle never stops"| A
 ```
 
 ---
@@ -70,35 +50,33 @@ This means:
 
 The pipeline is not a sequence of one-time activities. It is **an everlasting hunt** — the threat landscape changes, your environment changes, your data changes, and your understanding deepens. The cycle never completes.
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    THE EVERLASTING BASELINE HUNT                         │
-│                                                                          │
-│   EXPLICIT HUNTING                    IMPLICIT HUNTING                   │
-│   (Human-driven)                      (Automated — Detection CI/CD)      │
-│                                                                          │
-│   Analyst forms hypothesis    ──────▶  Validated hypothesis becomes      │
-│   from CTI + data analysis             Sigma rule in detection repo      │
-│           │                                      │                       │
-│           ▼                                      ▼                       │
-│   Analyst runs queries        ──────▶  Rule runs continuously in SIEM   │
-│   against collected data               against all incoming events       │
-│           │                                      │                       │
-│           ▼                                      ▼                       │
-│   Analyst finds evidence      ──────▶  Alert fires when pattern matches │
-│   (or doesn't)                                   │                       │
-│           │                                      ▼                       │
-│           ▼                            Incident response handles alert   │
-│   Findings feed back:                            │                       │
-│   - New detections (→ Module 04)                 ▼                       │
-│   - Updated threat profile (→ Mod 03)  Lessons learned feed back:       │
-│   - Data gaps identified (→ Mod 02)    - Detection tuning               │
-│   - New hypotheses formed              - New hypotheses                  │
-│           │                            - Threat profile updates          │
-│           └─────────── CYCLE ──────────┘                                │
-│                                                                          │
-│   The hunt never stops. It just becomes more automated over time.       │
-└─────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph EXPLICIT["EXPLICIT HUNTING (Human-driven)"]
+        E1["Analyst forms hypothesis\nfrom CTI + data analysis"]
+        E2["Analyst runs queries\nagainst collected data"]
+        E3["Analyst finds evidence\n(or doesn't)"]
+        E4["Findings feed back:\n- New detections → Module 04\n- Updated threat profile → Mod 03\n- Data gaps identified → Mod 02\n- New hypotheses formed"]
+        E1 --> E2 --> E3 --> E4
+    end
+
+    subgraph IMPLICIT["IMPLICIT HUNTING (Automated — Detection CI/CD)"]
+        I1["Validated hypothesis becomes\nSigma rule in detection repo"]
+        I2["Rule runs continuously in SIEM\nagainst all incoming events"]
+        I3["Alert fires when pattern matches"]
+        I4["Incident response handles alert"]
+        I5["Lessons learned feed back:\n- Detection tuning\n- New hypotheses\n- Threat profile updates"]
+        I1 --> I2 --> I3 --> I4 --> I5
+    end
+
+    E1 -.-> I1
+    E2 -.-> I2
+    E3 -.-> I3
+    E4 -->|"CYCLE"| I5
+    I5 -->|"CYCLE"| E1
+
+    style EXPLICIT fill:#f0f4ff,stroke:#335
+    style IMPLICIT fill:#f4fff0,stroke:#353
 ```
 
 ---
@@ -109,37 +87,27 @@ The Threat Hunters Playbook defines six pre-hunt activities that must be establi
 
 ### All Six Pre-Hunt Activities
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                  THREAT HUNTERS PLAYBOOK PRE-HUNT                        │
-│                                                                          │
-│   DATA MANAGEMENT (Module 02)                                            │
-│   ┌─────────────────────────────────────────────────────────────┐       │
-│   │ 1. Data Documentation    → OSSEM-DD data dictionaries       │       │
-│   │ 2. Data Standardisation  → OSSEM-CDM {prefix}_{attribute}   │       │
-│   │ 3. Data Modelling        → OSSEM-DM entity relationships    │       │
-│   │ 4. Data Quality          → Completeness, consistency, time  │       │
-│   └─────────────────────────────────────────────────────────────┘       │
-│                              │                                           │
-│                              ▼                                           │
-│   HYPOTHESIS GENERATION (Module 03 → this document)                      │
-│   ┌─────────────────────────────────────────────────────────────┐       │
-│   │ 5. Hypothesis Generation → Intelligence, situational, or    │       │
-│   │                            analytics-driven hypotheses       │       │
-│   └─────────────────────────────────────────────────────────────┘       │
-│                              │                                           │
-│                              ▼                                           │
-│   ANALYTICS DEVELOPMENT (Module 04 → this document)                      │
-│   ┌─────────────────────────────────────────────────────────────┐       │
-│   │ 6. Analytics Development → Queries to test hypothesis;       │       │
-│   │                            promote to production detections   │       │
-│   └─────────────────────────────────────────────────────────────┘       │
-│                              │                                           │
-│                              ▼                                           │
-│                         HUNT EXECUTION                                   │
-│                         DETECTION DEPLOYMENT                             │
-│                         CONTINUOUS TESTING                                │
-└─────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph DM["DATA MANAGEMENT (Module 02)"]
+        D1["1. Data Documentation → OSSEM-DD data dictionaries"]
+        D2["2. Data Standardisation → OSSEM-CDM #123;prefix#125;_#123;attribute#125;"]
+        D3["3. Data Modelling → OSSEM-DM entity relationships"]
+        D4["4. Data Quality → Completeness, consistency, time"]
+        D1 --- D2 --- D3 --- D4
+    end
+
+    subgraph HG["HYPOTHESIS GENERATION (Module 03)"]
+        H["5. Hypothesis Generation → Intelligence,\nsituational, or analytics-driven hypotheses"]
+    end
+
+    subgraph AD["ANALYTICS DEVELOPMENT (Module 04)"]
+        A["6. Analytics Development → Queries to test\nhypothesis; promote to production detections"]
+    end
+
+    EX["HUNT EXECUTION\nDETECTION DEPLOYMENT\nCONTINUOUS TESTING"]
+
+    DM --> HG --> AD --> EX
 ```
 
 ---
@@ -238,27 +206,18 @@ a SIEM search bar        documented logic,           as-code repo, validated
 
 ### Analytics Development Workflow
 
-```
-1. HYPOTHESISE          2. EXPLORE             3. DEVELOP
-Form the hunt      →    Explore data using  →   Build a structured
-hypothesis               ad-hoc queries          analytic (Jupyter
-(Pre-Hunt 5)             in the SIEM             notebook or Sigma
-                                                  rule draft)
-       │                      │                       │
-       ▼                      ▼                       ▼
-4. VALIDATE            5. PROMOTE              6. DEPLOY
-Test analytic      →    Convert validated   →   Deploy to SIEM via
-against Security         analytic to Sigma       CI/CD pipeline;
-Datasets (Mordor)        rule format; peer       update DeTTECT
-and Atomic RT            review                  score; monitor FPs
-       │                      │                       │
-       ▼                      ▼                       ▼
-7. FEEDBACK            The detection now runs continuously —
-Update DeTTECT     →    an automated, everlasting instance
-scores, Module 03       of the original hunt hypothesis
-threat profile,
-Module 02 data
-quality assessment
+```mermaid
+flowchart LR
+    S1["1. HYPOTHESISE\nForm the hunt hypothesis\n(Pre-Hunt 5)"]
+    S2["2. EXPLORE\nExplore data using\nad-hoc queries in the SIEM"]
+    S3["3. DEVELOP\nBuild a structured analytic\n(Jupyter notebook or\nSigma rule draft)"]
+    S4["4. VALIDATE\nTest analytic against\nSecurity Datasets (Mordor)\nand Atomic RT"]
+    S5["5. PROMOTE\nConvert validated analytic\nto Sigma rule format;\npeer review"]
+    S6["6. DEPLOY\nDeploy to SIEM via CI/CD\npipeline; update DeTTECT\nscore; monitor FPs"]
+    S7["7. FEEDBACK\nUpdate DeTTECT scores,\nModule 03 threat profile,\nModule 02 data quality"]
+
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7
+    S7 -->|"The detection now runs continuously —\nan automated, everlasting instance\nof the original hunt hypothesis"| S1
 ```
 
 ### From Hunt to Detection: The Promotion Criteria

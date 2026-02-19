@@ -31,31 +31,21 @@ Without a data model, these are disconnected log lines. With one, they become a 
 
 The Detection Model uses a **Source → Relationship → Target** pattern to define every meaningful interaction between security entities.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    DETECTION MODEL LAYERS                        │
-│                                                                  │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │  Layer 3: ATT&CK DATA SOURCE MAPPING                      │  │
-│  │  Technique → Data Source → Data Component → Relationship   │  │
-│  │  T1059.001 → Process → Process Creation → Process created  │  │
-│  │                                              Process       │  │
-│  └───────────────────────────────────────────────────────────┘  │
-│                              ▲                                   │
-│  ┌───────────────────────────┴───────────────────────────────┐  │
-│  │  Layer 2: ENTITY RELATIONSHIPS                             │  │
-│  │  Source Entity ──[verb]──▶ Target Entity                    │  │
-│  │  e.g., Process ──created──▶ Process                        │  │
-│  │  e.g., User ──accessed──▶ File                             │  │
-│  └───────────────────────────────────────────────────────────┘  │
-│                              ▲                                   │
-│  ┌───────────────────────────┴───────────────────────────────┐  │
-│  │  Layer 1: SECURITY EVENT MAPPINGS                          │  │
-│  │  Which event IDs from which log sources provide evidence    │  │
-│  │  for each relationship                                      │  │
-│  │  e.g., Sysmon Event 1, Windows Security 4688               │  │
-│  └───────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart BT
+    subgraph Layer1["Layer 1: SECURITY EVENT MAPPINGS"]
+        L1D["Which event IDs from which log sources\nprovide evidence for each relationship\ne.g., Sysmon Event 1, Windows Security 4688"]
+    end
+
+    subgraph Layer2["Layer 2: ENTITY RELATIONSHIPS"]
+        L2D["Source Entity --[verb]--&gt; Target Entity\ne.g., Process --created--&gt; Process\ne.g., User --accessed--&gt; File"]
+    end
+
+    subgraph Layer3["Layer 3: ATT&CK DATA SOURCE MAPPING"]
+        L3D["Technique → Data Source → Data Component → Relationship\nT1059.001 → Process → Process Creation → Process created Process"]
+    end
+
+    Layer1 --> Layer2 --> Layer3
 ```
 
 ---
@@ -189,14 +179,13 @@ The Detection Model bridges directly into ATT&CK through Data Components. This c
 
 ### The Mapping Chain
 
-```
-ATT&CK Technique
-    └──▶ Data Source (e.g., Process)
-            └──▶ Data Component (e.g., Process Creation)
-                    └──▶ Relationship (e.g., Process created Process)
-                            └──▶ Security Events (e.g., Sysmon 1, Security 4688)
-                                    └──▶ CDM Fields (e.g., process_name,
-                                                       process_command_line)
+```mermaid
+flowchart LR
+    A["ATT&CK Technique"] --> B["Data Source\n(e.g., Process)"]
+    B --> C["Data Component\n(e.g., Process Creation)"]
+    C --> D["Relationship\n(e.g., Process created Process)"]
+    D --> E["Security Events\n(e.g., Sysmon 1, Security 4688)"]
+    E --> F["CDM Fields\n(e.g., process_name,\nprocess_command_line)"]
 ```
 
 ### Example: T1059.001 (PowerShell)
@@ -290,29 +279,24 @@ Where relationships cannot be observed due to missing events or fields, document
 
 For your environment, create visual relationship maps showing which entity interactions you can observe:
 
-```
-                    ┌─────────┐
-                    │  USER   │
-                    └────┬────┘
-           authenticated │ executed
-                 to      │
-        ┌────────┴───────┴────────┐
-        ▼                         ▼
-   ┌─────────┐              ┌──────────┐
-   │  HOST   │              │ COMMAND  │
-   └─────────┘              └────┬─────┘
-                                 │ created
-                                 ▼
-   ┌─────────┐  loaded    ┌──────────┐  connected   ┌────────┐
-   │ MODULE  │◀───────────│ PROCESS  │──────to──────▶│   IP   │
-   └─────────┘            └────┬─────┘              └────────┘
-                    created │  │ accessed
-                            │  │
-                    ┌───────┘  └──────┐
-                    ▼                 ▼
-               ┌─────────┐     ┌──────────┐
-               │  FILE   │     │ REGISTRY │
-               └─────────┘     └──────────┘
+```mermaid
+flowchart TD
+    USER(["USER"])
+    HOST(["HOST"])
+    COMMAND(["COMMAND"])
+    PROCESS(["PROCESS"])
+    MODULE(["MODULE"])
+    IP(["IP"])
+    FILE(["FILE"])
+    REGISTRY(["REGISTRY"])
+
+    USER -- "authenticated to" --> HOST
+    USER -- "executed" --> COMMAND
+    COMMAND -- "created" --> PROCESS
+    PROCESS -- "loaded" --> MODULE
+    PROCESS -- "connected to" --> IP
+    PROCESS -- "created" --> FILE
+    PROCESS -- "accessed" --> REGISTRY
 ```
 
 Mark each relationship line with a coverage indicator:

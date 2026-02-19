@@ -15,32 +15,32 @@ Threat intelligence transforms raw threat data into actionable context that driv
 
 ### ATT&CK Structure
 
-```
-ATT&CK Enterprise Matrix
-├── Tactics (14)          WHY an adversary acts (the goal)
-│   ├── Reconnaissance
-│   ├── Resource Development
-│   ├── Initial Access
-│   ├── Execution
-│   ├── Persistence
-│   ├── Privilege Escalation
-│   ├── Defense Evasion
-│   ├── Credential Access
-│   ├── Discovery
-│   ├── Lateral Movement
-│   ├── Collection
-│   ├── Command and Control
-│   ├── Exfiltration
-│   └── Impact
-│
-├── Techniques (~200)     HOW an adversary achieves a tactic
-│   └── Sub-techniques    Specific implementations of a technique
-│
-├── Groups (~140)         WHO — named threat actor clusters
-│
-├── Software (~680)       WHAT tools/malware adversaries use
-│
-└── Data Sources          WHERE to look in your telemetry
+```mermaid
+flowchart TD
+    ATT["ATT&CK Enterprise Matrix"]
+
+    ATT --> TAC["<b>Tactics (14)</b><br/><i>WHY an adversary acts</i>"]
+    TAC --> T1["Reconnaissance"]
+    TAC --> T2["Resource Development"]
+    TAC --> T3["Initial Access"]
+    TAC --> T4["Execution"]
+    TAC --> T5["Persistence"]
+    TAC --> T6["Privilege Escalation"]
+    TAC --> T7["Defense Evasion"]
+    TAC --> T8["Credential Access"]
+    TAC --> T9["Discovery"]
+    TAC --> T10["Lateral Movement"]
+    TAC --> T11["Collection"]
+    TAC --> T12["Command and Control"]
+    TAC --> T13["Exfiltration"]
+    TAC --> T14["Impact"]
+
+    ATT --> TECH["<b>Techniques (~200)</b><br/><i>HOW an adversary achieves a tactic</i>"]
+    TECH --> SUB["Sub-techniques<br/>Specific implementations"]
+
+    ATT --> GRP["<b>Groups (~140)</b><br/><i>WHO — named threat actor clusters</i>"]
+    ATT --> SW["<b>Software (~680)</b><br/><i>WHAT tools/malware adversaries use</i>"]
+    ATT --> DS["<b>Data Sources</b><br/><i>WHERE to look in your telemetry</i>"]
 ```
 
 ### How ATT&CK Feeds Each Pipeline Module
@@ -185,27 +185,16 @@ Where:
 
 ## CTI Operations Workflow
 
-```
-┌─────────────────┐
-│  COLLECTION      │  Feeds: OSINT, ISACs, vendor reports, ATT&CK updates
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│  PROCESSING      │  Normalize to ATT&CK technique IDs
-└────────┬────────┘  Map indicators to techniques where possible
-         ▼
-┌─────────────────┐
-│  ANALYSIS        │  Update composite threat profile
-└────────┬────────┘  Re-score priority techniques
-         ▼
-┌─────────────────┐
-│  DISSEMINATION   │  Navigator layer → Detection Eng (Module 04)
-└────────┬────────┘  Priority changes → Governance (Module 01)
-         │           New techniques → IR Playbooks (Module 05)
-         ▼
-┌─────────────────┐
-│  FEEDBACK        │  Detection test results (Module 07) feed back
-└─────────────────┘  Incident findings update threat profile
+```mermaid
+flowchart TD
+    COL["<b>COLLECTION</b><br/>Feeds: OSINT, ISACs, vendor reports, ATT&CK updates"]
+    PROC["<b>PROCESSING</b><br/>Normalise to ATT&CK technique IDs<br/>Map indicators to techniques"]
+    ANAL["<b>ANALYSIS</b><br/>Update composite threat profile<br/>Re-score priority techniques"]
+    DISS["<b>DISSEMINATION</b><br/>Navigator layer → Detection Eng (Module 04)<br/>Priority changes → Governance (Module 01)<br/>New techniques → IR Playbooks (Module 05)"]
+    FB["<b>FEEDBACK</b><br/>Detection test results (Module 07) feed back<br/>Incident findings update threat profile"]
+
+    COL --> PROC --> ANAL --> DISS --> FB
+    FB -->|"Continuous cycle"| COL
 ```
 
 ### Intelligence Products

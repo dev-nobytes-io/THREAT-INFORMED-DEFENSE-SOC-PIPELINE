@@ -23,37 +23,39 @@ D3FEND is a knowledge graph of cybersecurity countermeasure techniques. Where AT
 
 ### D3FEND Taxonomy
 
-```
-D3FEND Defensive Techniques
-├── Harden
-│   ├── Application Hardening
-│   ├── Credential Hardening
-│   ├── Message Hardening
-│   ├── Platform Hardening
-│   └── User Training
-│
-├── Detect
-│   ├── File Analysis
-│   ├── Identifier Analysis
-│   ├── Message Analysis
-│   ├── Network Traffic Analysis
-│   ├── Platform Monitoring
-│   ├── Process Analysis
-│   └── User Behavior Analysis
-│
-├── Isolate
-│   ├── Execution Isolation
-│   └── Network Isolation
-│
-├── Deceive
-│   ├── Decoy Environment
-│   ├── Decoy Object
-│   └── Decoy Persona
-│
-└── Evict
-    ├── Credential Eviction
-    ├── File Eviction
-    └── Process Eviction
+```mermaid
+flowchart TD
+    ROOT["D3FEND Defensive Techniques"]
+
+    ROOT --> HARDEN["Harden"]
+    HARDEN --> H1["Application Hardening"]
+    HARDEN --> H2["Credential Hardening"]
+    HARDEN --> H3["Message Hardening"]
+    HARDEN --> H4["Platform Hardening"]
+    HARDEN --> H5["User Training"]
+
+    ROOT --> DETECT["Detect"]
+    DETECT --> D1["File Analysis"]
+    DETECT --> D2["Identifier Analysis"]
+    DETECT --> D3["Message Analysis"]
+    DETECT --> D4["Network Traffic Analysis"]
+    DETECT --> D5["Platform Monitoring"]
+    DETECT --> D6["Process Analysis"]
+    DETECT --> D7["User Behavior Analysis"]
+
+    ROOT --> ISOLATE["Isolate"]
+    ISOLATE --> I1["Execution Isolation"]
+    ISOLATE --> I2["Network Isolation"]
+
+    ROOT --> DECEIVE["Deceive"]
+    DECEIVE --> DC1["Decoy Environment"]
+    DECEIVE --> DC2["Decoy Object"]
+    DECEIVE --> DC3["Decoy Persona"]
+
+    ROOT --> EVICT["Evict"]
+    EVICT --> E1["Credential Eviction"]
+    EVICT --> E2["File Eviction"]
+    EVICT --> E3["Process Eviction"]
 ```
 
 ---
@@ -152,24 +154,27 @@ For each countermeasure, document the implementation specifics:
 
 Cross-reference the number of ATT&CK techniques a countermeasure addresses against implementation difficulty:
 
-```
-                    COUNTERMEASURE PRIORITY MATRIX
+```mermaid
+quadrantChart
+    title Countermeasure Priority Matrix
+    x-axis Easy Implementation --> Hard Implementation
+    y-axis Few Techniques Countered --> Many Techniques Countered
 
-TECHNIQUES   │
-COUNTERED    │
-(many)    5  │  ★ MFA          ★ App Allowlisting
-             │  ★ Network Seg  ★ Credential Hardening
-          4  │
-             │  ■ Exec Isolation  ■ Script Restriction
-          3  │  ■ User Training
-             │
-          2  │                    ○ Deception/Honeypots
-             │  ○ Memory Protect  ○ File Integrity Mon.
-          1  │
-(few)        │
-             └──────────────────────────────────────────
-              Easy              →              Hard
-                    IMPLEMENTATION DIFFICULTY
+    quadrant-1 High Priority
+    quadrant-2 Quick Wins
+    quadrant-3 Low Priority
+    quadrant-4 Specialized
+
+    MFA: [0.25, 0.90]
+    Network Segmentation: [0.25, 0.85]
+    App Allowlisting: [0.70, 0.90]
+    Credential Hardening: [0.70, 0.85]
+    Exec Isolation: [0.30, 0.65]
+    Script Restriction: [0.65, 0.65]
+    User Training: [0.25, 0.55]
+    Deception/Honeypots: [0.65, 0.35]
+    Memory Protection: [0.25, 0.30]
+    File Integrity Mon.: [0.65, 0.30]
 ```
 
 **Priority order:** Upper-left (many techniques, easy to implement) → Lower-right
@@ -180,38 +185,53 @@ COUNTERED    │
 
 Map countermeasures across the kill chain to ensure defense-in-depth:
 
-```
-ATTACK PHASE          D3FEND LAYER           COUNTERMEASURES
-─────────────────────────────────────────────────────────────
-Initial Access    →   Harden + Detect    →   Email filtering (D3-SV)
-                                              User training (D3-UT)
-                                              URL analysis (D3-UA)
+```mermaid
+flowchart LR
+    subgraph ATK["ATTACK PHASE"]
+        A1["Initial Access"]
+        A2["Execution"]
+        A3["Persistence"]
+        A4["Priv Escalation"]
+        A5["Defense Evasion"]
+        A6["Credential Access"]
+        A7["Lateral Movement"]
+        A8["Collection/Exfil"]
+        A9["Impact"]
+    end
 
-Execution         →   Harden + Isolate   →   Script restriction (D3-SER)
-                                              App allowlisting (D3-EAL)
-                                              Sandbox execution (D3-EI)
+    subgraph D3F["D3FEND LAYER"]
+        L1["Harden + Detect"]
+        L2["Harden + Isolate"]
+        L3["Detect + Evict"]
+        L4["Harden"]
+        L5["Detect + Isolate"]
+        L6["Harden"]
+        L7["Isolate"]
+        L8["Detect + Isolate"]
+        L9["Harden"]
+    end
 
-Persistence       →   Detect + Evict     →   File integrity (D3-FIM)
-                                              Credential rotation (D3-CR)
+    subgraph CTR["COUNTERMEASURES"]
+        C1["Email filtering (D3-SV)\nUser training (D3-UT)\nURL analysis (D3-UA)"]
+        C2["Script restriction (D3-SER)\nApp allowlisting (D3-EAL)\nSandbox execution (D3-EI)"]
+        C3["File integrity (D3-FIM)\nCredential rotation (D3-CR)"]
+        C4["Least privilege (D3-LP)\nCredential Guard"]
+        C5["Process monitoring\nCode signing enforcement"]
+        C6["MFA (D3-MFA)\nCredential hardening (D3-CH)\nLSA Protection"]
+        C7["Network segmentation (D3-NS)\nZero trust architecture"]
+        C8["DLP controls\nNetwork monitoring"]
+        C9["Immutable backups (D3-FB)\nEncryption (D3-FE)"]
+    end
 
-Priv Escalation   →   Harden             →   Least privilege (D3-LP)
-                                              Credential Guard
-
-Defense Evasion   →   Detect + Isolate   →   Process monitoring
-                                              Code signing enforcement
-
-Credential Access →   Harden             →   MFA (D3-MFA)
-                                              Credential hardening (D3-CH)
-                                              LSA Protection
-
-Lateral Movement  →   Isolate            →   Network segmentation (D3-NS)
-                                              Zero trust architecture
-
-Collection/Exfil  →   Detect + Isolate   →   DLP controls
-                                              Network monitoring
-
-Impact            →   Harden             →   Immutable backups (D3-FB)
-                                              Encryption (D3-FE)
+    A1 --> L1 --> C1
+    A2 --> L2 --> C2
+    A3 --> L3 --> C3
+    A4 --> L4 --> C4
+    A5 --> L5 --> C5
+    A6 --> L6 --> C6
+    A7 --> L7 --> C7
+    A8 --> L8 --> C8
+    A9 --> L9 --> C9
 ```
 
 ---
