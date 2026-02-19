@@ -160,26 +160,33 @@ The [Chartered Institute of Information Security (CIISec) Skills Framework](http
 
 Using CIISec alongside ASD and DoDCWF provides a **three-dimensional workforce assessment**:
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                THREE-FRAMEWORK WORKFORCE ASSESSMENT               │
-│                                                                   │
-│  DoDCWF 8140          ASD Cyber Skills        CIISec Skills       │
-│  ─────────────        ───────────────         ─────────────       │
-│  WHAT role?           HOW skilled?            HOW DEEPLY skilled? │
-│                                                                   │
-│  Work Role ID    →    Skill Stream    →    Specialism Knowledge   │
-│  (PR-CDA-001)        (Cyber Sec Ops)      (A5: SOC Workflow      │
-│                                            Optimisation,          │
-│  KSA               → Level (1-5)     →     Alert Fatigue         │
-│  Requirements                               Mitigation,          │
-│                                             Shift Handover        │
-│  Certification   →   Progression     →     Protocols)            │
-│  Requirements        Criteria                                     │
-│                                                                   │
-│  DEFINES the role    MEASURES the      DIFFERENTIATES the        │
-│                      competency level   depth within each level   │
-└──────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph DODCWF["<b>DoDCWF 8140</b><br/><i>DEFINES the role</i>"]
+        direction TB
+        D1["Work Role ID<br/>#40;PR-CDA-001#41;"]
+        D2["KSA Requirements"]
+        D3["Certification Requirements"]
+        D1 --- D2 --- D3
+    end
+
+    subgraph ASD["<b>ASD Cyber Skills</b><br/><i>MEASURES competency level</i>"]
+        direction TB
+        A1["Skill Stream<br/>#40;Cyber Sec Ops#41;"]
+        A2["Level #40;1-5#41;"]
+        A3["Progression Criteria"]
+        A1 --- A2 --- A3
+    end
+
+    subgraph CIISEC["<b>CIISec Skills</b><br/><i>DIFFERENTIATES depth within level</i>"]
+        direction TB
+        C1["Specialism Knowledge<br/>#40;A5: SOC Workflow Optimisation,<br/>Alert Fatigue Mitigation,<br/>Shift Handover Protocols#41;"]
+    end
+
+    D1 -->|"WHAT role?"| A1
+    A1 -->|"HOW skilled?"| C1
+    D2 --> A2
+    D3 --> A3
 ```
 
 **Example — Detection Engineer:**

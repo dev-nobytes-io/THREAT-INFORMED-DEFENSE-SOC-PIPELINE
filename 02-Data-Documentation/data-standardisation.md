@@ -27,26 +27,13 @@ This means every analytic must account for every field variant — or it misses 
 
 The CDM provides the standardisation layer. It operates across three levels:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  Level 3: SCHEMA TABLES                                     │
-│  Composite schemas grouping multiple entities                │
-│  e.g., network_session, process_creation, authentication     │
-│                                                              │
-│  Tables aggregate entities into normalised event categories  │
-├─────────────────────────────────────────────────────────────┤
-│  Level 2: FIELD NAMING CONVENTION                            │
-│  {prefix}_{attribute} pattern                                │
-│  e.g., process_name, process_parent_id, src_ip_addr          │
-│                                                              │
-│  Deterministic: entity + prefix + attribute = field name     │
-├─────────────────────────────────────────────────────────────┤
-│  Level 1: SCHEMA ENTITIES                                    │
-│  37 atomic entity definitions in YAML                        │
-│  e.g., process, file, user, network, registry, dns           │
-│                                                              │
-│  Each entity defines attributes + valid prefixes             │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    L3["<b>Level 3: SCHEMA TABLES</b><br/>Composite schemas grouping multiple entities<br/>e.g., network_session, process_creation, authentication<br/><br/><i>Tables aggregate entities into normalised event categories</i>"]
+    L2["<b>Level 2: FIELD NAMING CONVENTION</b><br/>#123;prefix#125;_#123;attribute#125; pattern<br/>e.g., process_name, process_parent_id, src_ip_addr<br/><br/><i>Deterministic: entity + prefix + attribute = field name</i>"]
+    L1["<b>Level 1: SCHEMA ENTITIES</b><br/>37 atomic entity definitions in YAML<br/>e.g., process, file, user, network, registry, dns<br/><br/><i>Each entity defines attributes + valid prefixes</i>"]
+
+    L3 --- L2 --- L1
 ```
 
 ---

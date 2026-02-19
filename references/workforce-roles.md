@@ -193,29 +193,46 @@ Certifications (DoD 8140):
 
 ## Career Progression Paths
 
-```
-Entry                    Mid-Career                Senior / Leadership
-─────────────────────────────────────────────────────────────────────
+```mermaid
+flowchart LR
+    subgraph ENTRY["<b>Entry</b>"]
+        T1["Tier 1 Analyst"]
+    end
 
-Tier 1 Analyst ────────▶ Tier 2 Analyst ─────────▶ Tier 3 / Senior
-    │                        │                          │
-    │                        ▼                          ▼
-    │                   Detection Engineer ────────▶ Lead Detection Eng.
-    │                        │
-    ▼                        ▼
-Tier 1 Analyst ────────▶ Threat Intel Analyst ───▶ CTI Lead
-    │                        │
-    │                        ▼
-    │                   Threat Hunter ────────────▶ Hunt Team Lead
-    │
-    ▼
-Tier 1 Analyst ────────▶ Incident Responder ─────▶ IR Lead
-                             │
-                             ▼
-                        Forensic Analyst ─────────▶ DFIR Lead
+    subgraph MID["<b>Mid-Career</b>"]
+        T2["Tier 2 Analyst"]
+        DE["Detection Engineer"]
+        TIA["Threat Intel Analyst"]
+        TH["Threat Hunter"]
+        IR["Incident Responder"]
+        FA["Forensic Analyst"]
+    end
 
-All Senior Roles ──────────────────────────────────▶ SOC Manager
-                                                        │
-                                                        ▼
-                                                     CISO / Director
+    subgraph SENIOR["<b>Senior / Leadership</b>"]
+        T3["Tier 3 / Senior"]
+        LDE["Lead Detection Eng."]
+        CTI["CTI Lead"]
+        HTL["Hunt Team Lead"]
+        IRL["IR Lead"]
+        DFIR["DFIR Lead"]
+    end
+
+    subgraph EXEC["<b>Executive</b>"]
+        SOC["SOC Manager"]
+        CISO["CISO / Director"]
+    end
+
+    T1 --> T2 --> T3
+    T2 --> DE --> LDE
+    T1 --> TIA --> CTI
+    TIA --> TH --> HTL
+    T1 --> IR --> IRL
+    IR --> FA --> DFIR
+    T3 --> SOC
+    LDE --> SOC
+    CTI --> SOC
+    HTL --> SOC
+    IRL --> SOC
+    DFIR --> SOC
+    SOC --> CISO
 ```

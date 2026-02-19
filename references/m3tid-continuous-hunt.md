@@ -239,36 +239,28 @@ A hunt analytic should be promoted to a production detection when:
 
 The detection-as-code CI/CD pipeline is the mechanism that transforms the continuous hunt into an automated, self-improving system.
 
+```mermaid
+flowchart LR
+    COMMIT["<b>COMMIT</b><br/>New/modified<br/>Sigma rule"]
+    BUILD["<b>BUILD</b><br/>Sigma compile<br/>to SIEM format"]
+    TEST["<b>TEST</b><br/>Atomic Red Team<br/>validate detection"]
+    DEPLOY["<b>DEPLOY</b><br/>Push to SIEM"]
+    MONITOR["<b>MONITOR</b><br/>FP rate,<br/>alert volume"]
+    SCORE["<b>SCORE</b><br/>DeTTECT score<br/>update"]
+    REPORT["<b>REPORT</b><br/>Coverage metrics<br/>to Module 01"]
+    FEEDBACK["<b>FEEDBACK</b><br/>Update threat<br/>profile"]
+
+    COMMIT --> BUILD --> TEST --> DEPLOY
+    DEPLOY --> MONITOR --> SCORE --> REPORT --> FEEDBACK
+    FEEDBACK -->|"Cycle repeats"| COMMIT
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                   DETECTION ENGINEERING CI/CD PIPELINE                    │
-│                                                                          │
-│   ┌─────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐            │
-│   │  COMMIT  │──▶│  BUILD   │──▶│  TEST    │──▶│  DEPLOY  │            │
-│   │          │   │          │   │          │   │          │            │
-│   │ New/mod  │   │ Sigma    │   │ Atomic   │   │ Push to  │            │
-│   │ Sigma    │   │ compile  │   │ Red Team │   │ SIEM     │            │
-│   │ rule     │   │ to SIEM  │   │ validate │   │          │            │
-│   │          │   │ format   │   │ detection│   │          │            │
-│   └─────────┘   └──────────┘   └──────────┘   └──────┬───┘            │
-│                                                       │                 │
-│                                                       ▼                 │
-│   ┌─────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐            │
-│   │ FEEDBACK│◀──│  REPORT  │◀──│  SCORE   │◀──│  MONITOR │            │
-│   │         │   │          │   │          │   │          │            │
-│   │ Update  │   │ Coverage │   │ DeTTECT  │   │ FP rate, │            │
-│   │ threat  │   │ metrics  │   │ score    │   │ alert    │            │
-│   │ profile │   │ to Mod01 │   │ update   │   │ volume   │            │
-│   └─────────┘   └──────────┘   └──────────┘   └──────────┘            │
-│                                                                          │
-│   Every detection deployed is a hunt hypothesis running permanently.    │
-│   Every test validates the hypothesis still works.                       │
-│   Every alert is a hunt finding requiring triage.                       │
-│   Every incident feeds new hypotheses.                                   │
-│                                                                          │
-│                    THE CYCLE NEVER STOPS.                                 │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+
+> *Every detection deployed is a hunt hypothesis running permanently.*
+> *Every test validates the hypothesis still works.*
+> *Every alert is a hunt finding requiring triage.*
+> *Every incident feeds new hypotheses.*
+>
+> ***THE CYCLE NEVER STOPS.***
 
 ---
 
@@ -276,67 +268,30 @@ The detection-as-code CI/CD pipeline is the mechanism that transforms the contin
 
 Integrating M3TID, all six pre-hunt activities, detection engineering CI/CD, and incident response into a single continuous cycle:
 
-```
-                    ┌──── M3TID: ANALYSE THREATS ◀────────────────┐
-                    │     (Module 03: ATT&CK threat profile)       │
-                    │                                               │
-                    ▼                                               │
-            PRE-HUNT: DATA MANAGEMENT                              │
-            (Module 02: DD → CDM → DM → Quality)                   │
-                    │                                               │
-                    ▼                                               │
-            PRE-HUNT: HYPOTHESIS GENERATION                        │
-            (Intelligence / Situational / Analytics)               │
-                    │                                               │
-                    ▼                                               │
-            PRE-HUNT: ANALYTICS DEVELOPMENT                        │
-            (Hunt queries → validated analytics)                   │
-                    │                                               │
-              ┌─────┴─────┐                                        │
-              ▼           ▼                                        │
-        EXPLICIT       IMPLICIT                                    │
-        HUNT           HUNT                                        │
-        (Analyst)      (Detection CI/CD)                           │
-              │           │                                        │
-              ▼           ▼                                        │
-        FINDINGS      ALERTS                                       │
-              │           │                                        │
-              ▼           ▼                                        │
-        ┌─────────────────────┐                                    │
-        │  M3TID: ASSESS      │                                    │
-        │  DEFENSES            │                                    │
-        │  (Module 07: Testing │                                    │
-        │   + DeTTECT scoring) │                                    │
-        └──────────┬──────────┘                                    │
-                   │                                               │
-                   ▼                                               │
-        ┌─────────────────────┐                                    │
-        │  M3TID: IDENTIFY    │                                    │
-        │  GAPS               │                                    │
-        │  (Coverage analysis │                                    │
-        │   + data gaps       │                                    │
-        │   + process gaps)   │                                    │
-        └──────────┬──────────┘                                    │
-                   │                                               │
-                   ▼                                               │
-        ┌─────────────────────┐                                    │
-        │  M3TID: IMPROVE     │                                    │
-        │  DEFENSES            │                                    │
-        │  (Module 04: new     │                                    │
-        │   detections         │                                    │
-        │   Module 05: new     │                                    │
-        │   playbooks          │                                    │
-        │   Module 06: new     │                                    │
-        │   countermeasures)   │                                    │
-        └──────────┬──────────┘                                    │
-                   │                                               │
-                   ▼                                               │
-        ┌─────────────────────┐                                    │
-        │  M3TID: SHARE       │────────────────────────────────────┘
-        │  FINDINGS            │
-        │  (Community, ISACs,  │
-        │   internal teams)    │
-        └─────────────────────┘
+```mermaid
+flowchart TD
+    ANALYSE["<b>M3TID: ANALYSE THREATS</b><br/>Module 03: ATT&CK threat profile"]
+    DATA["<b>PRE-HUNT: DATA MANAGEMENT</b><br/>Module 02: DD → CDM → DM → Quality"]
+    HYPO["<b>PRE-HUNT: HYPOTHESIS GENERATION</b><br/>Intelligence / Situational / Analytics"]
+    ANALYTICS["<b>PRE-HUNT: ANALYTICS DEVELOPMENT</b><br/>Hunt queries → validated analytics"]
+    EXPLICIT["<b>EXPLICIT HUNT</b><br/>Analyst-driven"]
+    IMPLICIT["<b>IMPLICIT HUNT</b><br/>Detection CI/CD"]
+    FINDINGS["FINDINGS"]
+    ALERTS["ALERTS"]
+    ASSESS["<b>M3TID: ASSESS DEFENSES</b><br/>Module 07: Testing<br/>+ DeTTECT scoring"]
+    GAPS["<b>M3TID: IDENTIFY GAPS</b><br/>Coverage analysis<br/>+ data gaps + process gaps"]
+    IMPROVE["<b>M3TID: IMPROVE DEFENSES</b><br/>Module 04: new detections<br/>Module 05: new playbooks<br/>Module 06: new countermeasures"]
+    SHARE["<b>M3TID: SHARE FINDINGS</b><br/>Community, ISACs,<br/>internal teams"]
+
+    ANALYSE --> DATA --> HYPO --> ANALYTICS
+    ANALYTICS --> EXPLICIT
+    ANALYTICS --> IMPLICIT
+    EXPLICIT --> FINDINGS
+    IMPLICIT --> ALERTS
+    FINDINGS --> ASSESS
+    ALERTS --> ASSESS
+    ASSESS --> GAPS --> IMPROVE --> SHARE
+    SHARE -->|"Continuous cycle"| ANALYSE
 ```
 
 ---
