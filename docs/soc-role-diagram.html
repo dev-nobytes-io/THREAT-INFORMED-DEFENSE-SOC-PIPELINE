@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTID Pipeline — SOC Role Inputs & Outputs</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a202c;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            color: #e2e8f0;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .mermaid {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 100%;
+            overflow-x: auto;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+    <h1>CTID Pipeline — SOC Role Inputs & Outputs</h1>
+    <div class="mermaid">
+flowchart TB
+
+    subgraph EXTERNAL["External Sources"]
+        EXT_FEEDS["OSINT / ISACs / ASD-ACSC\nFive Eyes / Dark Web\nVendor Feeds"]
+    end
+
+    subgraph L4_SPECIALISTS["L4 — Subject Matter Experts"]
+
+        subgraph CTI_BLOCK["Cyber Threat Intelligence"]
+            CTI["CTI Analysts"]
+        end
+
+        subgraph HUNT_BLOCK["Threat Hunting"]
+            HUNT["Threat Hunters"]
+        end
+
+        subgraph DE_BLOCK["Detection Engineering"]
+            DE["Detection Engineers"]
+        end
+
+        subgraph CTE_BLOCK["Cyber Threat Emulation"]
+            CTE["CTE / Purple Team"]
+        end
+    end
+
+    subgraph OPERATIONAL["Operational Analysts"]
+        L3["L3 — Senior Analyst\n(Incident Lead)"]
+        L1L2["L1-L2 — Triage Analysts\n(Alert Queue)"]
+    end
+
+    subgraph ENVIRONMENT["Defended Environment"]
+        SIEM["SIEM / EDR / NDR\nAlert Surface"]
+        LOGS["Raw Telemetry\n& Log Sources"]
+    end
+
+    EXT_FEEDS -- "Raw intelligence\nAdvisories & IOCs\nCampaign reporting" --> CTI
+
+    CTI -- "Finished intelligence\nThreat profiles & PIRs\nCampaign context\nEnriched IOCs" --> L3
+    CTI -- "Priority IOC lists\nThreat briefs\nWatch lists" --> L1L2
+    CTI -- "Hunt hypotheses\nAdversary TTP profiles\nATT&CK mappings" --> HUNT
+    CTI -- "TTP-driven detection\nrequirements\nIOC signatures" --> DE
+    CTI -- "Adversary playbooks\nEmulation scenarios\nPriority TTPs" --> CTE
+
+    HUNT -- "Confirmed threat activity\nNovel behavioural patterns\nUndiscovered intrusions" --> L3
+    HUNT -- "New detection candidates\nBehavioural baselines\nQuery templates" --> DE
+    HUNT -- "Validated/invalidated\nhypotheses\nCoverage gap findings" --> CTI
+    HUNT -- "Hunt findings for\nemulation validation" --> CTE
+
+    DE -- "SIGMA/YARA rules\nSIEM correlation rules\nEDR custom detections" --> SIEM
+    DE -- "Detection coverage maps\nRule documentation" --> CTI
+    DE -- "New/tuned alert rules\nReduced FP rates" --> L1L2
+
+    CTE -- "Coverage gap reports\nDetection validation results\nControl efficacy metrics" --> DE
+    CTE -- "Threat model updates\nEmulation-validated TTPs\nIntel accuracy feedback" --> CTI
+    CTE -- "Exercise findings\nRed team observations" --> HUNT
+
+    L3 -- "Tactical intel from incidents\nNovel artefacts & TTPs\nCampaign linkage analysis" --> CTI
+    L3 -- "Informal hunt leads\nAnomaly observations\nBaseline deviations" --> HUNT
+    L3 -- "FP feedback\nRule tuning requests\nNew detection gaps" --> DE
+    L3 -- "Escalated incidents\nInvestigation context" --> L1L2
+
+    L1L2 -- "Escalated alerts\nInitial triage findings\nObservable enrichment" --> L3
+    L1L2 -- "Ground truth observables\nCollection gap RFIs\nEnvironment-confirmed IOCs" --> CTI
+    L1L2 -- "Detection efficacy feedback\nFP/FN rates\nRule noise reports" --> DE
+
+    SIEM -- "Alerts & detections" --> L1L2
+    LOGS -- "Raw data for\nhypothesis-driven queries" --> HUNT
+
+    GENERALIST["🔷 Generalist — You\nCross-domain visibility\nShift coverage bridge\nFeedback conduit"]
+
+    GENERALIST -. "Observables & ground truth\nCollection gap RFIs\nTactical reporting" .-> CTI
+    GENERALIST -. "Hunt leads & hypotheses\nBaseline context\nPost-hunt validation" .-> HUNT
+    GENERALIST -. "FP/FN feedback\nTuning requests\nProduction validation" .-> DE
+    CTI -. "Enriched context\nEarly warning\nCampaign intelligence" .-> GENERALIST
+    HUNT -. "Coverage confidence\nNew detection artefacts\nEnvironment insights" .-> GENERALIST
+    DE -. "Detection documentation\nRule intent & logic" .-> GENERALIST
+
+    classDef external fill:#4a5568,stroke:#2d3748,color:#e2e8f0
+    classDef cti fill:#2b6cb0,stroke:#2c5282,color:#fff
+    classDef hunt fill:#9b2c2c,stroke:#742a2a,color:#fff
+    classDef de fill:#2f855a,stroke:#276749,color:#fff
+    classDef cte fill:#9c4221,stroke:#7b341e,color:#fff
+    classDef ops fill:#5a67d8,stroke:#4c51bf,color:#fff
+    classDef env fill:#718096,stroke:#4a5568,color:#fff
+    classDef gen fill:#d69e2e,stroke:#b7791f,color:#1a202c
+
+    class EXT_FEEDS external
+    class CTI cti
+    class HUNT hunt
+    class DE de
+    class CTE cte
+    class L3,L1L2 ops
+    class SIEM,LOGS env
+    class GENERALIST gen
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                rankSpacing: 60,
+                nodeSpacing: 40
+            },
+            securityLevel: 'loose'
+        });
+    </script>
+</body>
+</html>

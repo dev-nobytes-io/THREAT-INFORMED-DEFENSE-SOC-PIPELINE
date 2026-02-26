@@ -50,6 +50,127 @@ flowchart TD
 
 ---
 
+## SOC Role Relationships
+
+The diagram below maps every **input and output** between operational SOC roles — showing exactly what each function produces and consumes. It complements the pipeline architecture above by adding the **human layer**: who talks to whom, and what they exchange.
+
+> View the interactive version: [`docs/soc-role-diagram.html`](docs/soc-role-diagram.html)
+
+| Role | Layer | Primary Function |
+|---|---|---|
+| **CTI Analysts** | L4 — SME | Convert raw intelligence into finished, actionable threat profiles |
+| **Threat Hunters** | L4 — SME | Generate and validate hypotheses; discover undiscovered intrusions |
+| **Detection Engineers** | L4 — SME | Codify hunt findings into automated Sigma/YARA/EDR detections |
+| **CTE / Purple Team** | L4 — SME | Emulate adversaries to validate detection coverage and control efficacy |
+| **L3 Senior Analyst** | Operational | Lead incident response; provide tactical intel and hunt leads from live cases |
+| **L1-L2 Triage Analysts** | Operational | Work the alert queue; escalate and feed ground-truth observables upstream |
+| **Generalist** | Cross-domain | Provide shift coverage across all tiers; act as feedback conduit between functions |
+
+```mermaid
+flowchart TB
+
+    subgraph EXTERNAL["External Sources"]
+        EXT_FEEDS["OSINT / ISACs / ASD-ACSC\nFive Eyes / Dark Web\nVendor Feeds"]
+    end
+
+    subgraph L4_SPECIALISTS["L4 — Subject Matter Experts"]
+
+        subgraph CTI_BLOCK["Cyber Threat Intelligence"]
+            CTI["CTI Analysts"]
+        end
+
+        subgraph HUNT_BLOCK["Threat Hunting"]
+            HUNT["Threat Hunters"]
+        end
+
+        subgraph DE_BLOCK["Detection Engineering"]
+            DE["Detection Engineers"]
+        end
+
+        subgraph CTE_BLOCK["Cyber Threat Emulation"]
+            CTE["CTE / Purple Team"]
+        end
+    end
+
+    subgraph OPERATIONAL["Operational Analysts"]
+        L3["L3 — Senior Analyst\n(Incident Lead)"]
+        L1L2["L1-L2 — Triage Analysts\n(Alert Queue)"]
+    end
+
+    subgraph ENVIRONMENT["Defended Environment"]
+        SIEM["SIEM / EDR / NDR\nAlert Surface"]
+        LOGS["Raw Telemetry\n& Log Sources"]
+    end
+
+    EXT_FEEDS -- "Raw intelligence\nAdvisories & IOCs\nCampaign reporting" --> CTI
+
+    CTI -- "Finished intelligence\nThreat profiles & PIRs\nCampaign context\nEnriched IOCs" --> L3
+    CTI -- "Priority IOC lists\nThreat briefs\nWatch lists" --> L1L2
+    CTI -- "Hunt hypotheses\nAdversary TTP profiles\nATT&CK mappings" --> HUNT
+    CTI -- "TTP-driven detection\nrequirements\nIOC signatures" --> DE
+    CTI -- "Adversary playbooks\nEmulation scenarios\nPriority TTPs" --> CTE
+
+    HUNT -- "Confirmed threat activity\nNovel behavioural patterns\nUndiscovered intrusions" --> L3
+    HUNT -- "New detection candidates\nBehavioural baselines\nQuery templates" --> DE
+    HUNT -- "Validated/invalidated\nhypotheses\nCoverage gap findings" --> CTI
+    HUNT -- "Hunt findings for\nemulation validation" --> CTE
+
+    DE -- "SIGMA/YARA rules\nSIEM correlation rules\nEDR custom detections" --> SIEM
+    DE -- "Detection coverage maps\nRule documentation" --> CTI
+    DE -- "New/tuned alert rules\nReduced FP rates" --> L1L2
+
+    CTE -- "Coverage gap reports\nDetection validation results\nControl efficacy metrics" --> DE
+    CTE -- "Threat model updates\nEmulation-validated TTPs\nIntel accuracy feedback" --> CTI
+    CTE -- "Exercise findings\nRed team observations" --> HUNT
+
+    L3 -- "Tactical intel from incidents\nNovel artefacts & TTPs\nCampaign linkage analysis" --> CTI
+    L3 -- "Informal hunt leads\nAnomaly observations\nBaseline deviations" --> HUNT
+    L3 -- "FP feedback\nRule tuning requests\nNew detection gaps" --> DE
+    L3 -- "Escalated incidents\nInvestigation context" --> L1L2
+
+    L1L2 -- "Escalated alerts\nInitial triage findings\nObservable enrichment" --> L3
+    L1L2 -- "Ground truth observables\nCollection gap RFIs\nEnvironment-confirmed IOCs" --> CTI
+    L1L2 -- "Detection efficacy feedback\nFP/FN rates\nRule noise reports" --> DE
+
+    SIEM -- "Alerts & detections" --> L1L2
+    LOGS -- "Raw data for\nhypothesis-driven queries" --> HUNT
+
+    GENERALIST["Generalist\nCross-domain visibility\nShift coverage bridge\nFeedback conduit"]
+
+    GENERALIST -. "Observables & ground truth\nCollection gap RFIs\nTactical reporting" .-> CTI
+    GENERALIST -. "Hunt leads & hypotheses\nBaseline context\nPost-hunt validation" .-> HUNT
+    GENERALIST -. "FP/FN feedback\nTuning requests\nProduction validation" .-> DE
+    CTI -. "Enriched context\nEarly warning\nCampaign intelligence" .-> GENERALIST
+    HUNT -. "Coverage confidence\nNew detection artefacts\nEnvironment insights" .-> GENERALIST
+    DE -. "Detection documentation\nRule intent & logic" .-> GENERALIST
+```
+
+### Key Information Flows
+
+| From | To | What Flows |
+|---|---|---|
+| **External feeds** | CTI | Raw OSINT, ISAC advisories, IOCs, dark web reporting |
+| **CTI** | L3, L1L2 | Finished intelligence, enriched IOCs, threat briefs, watch lists |
+| **CTI** | Hunters | Hunt hypotheses, ATT&CK-mapped TTP profiles |
+| **CTI** | Detection Eng | TTP-driven detection requirements, IOC signatures |
+| **CTI** | CTE | Adversary playbooks, emulation scenarios, priority TTPs |
+| **Hunters** | L3 | Confirmed threat activity, undiscovered intrusions |
+| **Hunters** | Detection Eng | New detection candidates, behavioural baselines, query templates |
+| **Hunters** | CTI | Validated/invalidated hypotheses, coverage gap findings |
+| **Detection Eng** | SIEM/EDR | Sigma/YARA rules, correlation rules, custom detections |
+| **Detection Eng** | L1-L2 | New and tuned alert rules, reduced false-positive rates |
+| **CTE** | Detection Eng | Coverage gap reports, detection validation results |
+| **CTE** | CTI | Emulation-validated TTPs, intel accuracy feedback |
+| **L3** | CTI | Tactical intel, novel artefacts, campaign linkage analysis |
+| **L3** | Hunters | Hunt leads, anomaly observations, baseline deviations |
+| **L3** | Detection Eng | FP feedback, rule tuning requests, new detection gaps |
+| **L1-L2** | L3 | Escalated alerts, initial triage findings |
+| **L1-L2** | CTI | Ground truth observables, collection gap RFIs |
+| **L1-L2** | Detection Eng | FP/FN rates, rule noise reports |
+| **Generalist** | CTI / Hunters / DE | Cross-tier feedback, observables, tuning requests (dashed — ad-hoc) |
+
+---
+
 ## Module Data Flow
 
 Every module in the pipeline has explicit **inputs** (what it consumes) and **outputs** (what it produces). The pipeline is not a linear sequence — it is a **directed graph with feedback loops**. The table below summarises every inter-module data flow:
@@ -257,6 +378,8 @@ flowchart TD
 ```
 THREAT-INFORMED-DEFENSE-SOC-PIPELINE/
 ├── README.md                              # This file
+├── docs/
+│   └── soc-role-diagram.html              # Interactive SOC role input/output diagram
 ├── 01-Governance/
 │   └── README.md                          # NIST CSF 2.0, ASD CSF, DoDCWF 8140, CIISec
 ├── 02-Data-Documentation/
