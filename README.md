@@ -9,64 +9,6 @@ A structured, open-framework pipeline for building and maturing a Security Opera
 ## Pipeline Architecture
 
 ```mermaid
-flowchart TD
-    subgraph Pipeline["THREAT-INFORMED DEFENSE SOC PIPELINE — M3TID Continuous Hunt Cycle"]
-        direction TB
-        M01["<b>01 GOVERNANCE</b><br/><i>Authority</i><br/>NIST CSF 2.0 · ASD · DoDCWF · CIISec"]
-        M02["<b>02 DATA DOCUMENTATION</b><br/><i>Foundation</i><br/>OSSEM DD, CDM, DM · TH Playbook"]
-        M03["<b>03 THREAT INTELLIGENCE</b><br/><i>Direction</i><br/>MITRE ATT&CK · M3TID"]
-        M04["<b>04 DETECTION ENGINEERING</b><br/><i>Codify</i><br/>DeTTECT · CAR · Sigma · CI/CD"]
-        M05["<b>05 INCIDENT RESPONSE</b><br/><i>Activate</i><br/>RE&CT Framework"]
-        M06["<b>06 COUNTERMEASURES</b><br/><i>Harden</i><br/>MITRE D3FEND"]
-        M07["<b>07 DETECTION TESTING</b><br/><i>Validate</i><br/>Atomic RT · attack_range"]
-        M08["<b>08 FORENSICS & DFIR</b><br/><i>Evidence</i><br/>Velociraptor · Volatility 3 · Plaso"]
-
-        M01 -->|"Charter, scope, assets"| M02
-        M02 -->|"Inventory, CDM, DM, quality"| M04
-        M03 -->|"Data source reqs"| M02
-        M02 -->|"Inventory, CDM, DM"| M03
-        M03 -->|"Prioritised technique list"| M04
-        M03 -->|"Threat profile"| M07
-        M04 -->|"Sigma rules"| M07
-        M07 -->|"Scores, gaps"| M04
-        M04 -->|"Alerts"| M05
-        M04 -->|"Detection gaps"| M06
-        M07 -->|"Gap tickets"| M06
-        M06 -->|"Countermeasure status"| M05
-        M05 -->|"Acquisition requests"| M08
-        M08 -->|"Findings → 02, 03, 04, 07"| M03
-        M08 -->|"Reports, readiness"| M01
-        M07 -->|"Coverage dashboard, KPIs"| M01
-        M05 -->|"Incident reports, lessons"| M01
-
-        subgraph Hunt["EVERLASTING BASELINE HUNT"]
-            Cycle["Test → Gaps → Hypotheses → Analytics → Detections → Test<br/>◀── M3TID cycle ──▶ SOC-CMM maturity ──▶"]
-        end
-
-        M07 --> Hunt
-        Hunt --> M03
-    end
-```
-
----
-
-## SOC Role Relationships
-
-The diagram below maps every **input and output** between operational SOC roles — showing exactly what each function produces and consumes. It complements the pipeline architecture above by adding the **human layer**: who talks to whom, and what they exchange.
-
-> View the interactive version: [`docs/soc-role-diagram.html`](docs/soc-role-diagram.html)
-
-| Role | Layer | Primary Function |
-|---|---|---|
-| **CTI Analysts** | L4 — SME | Convert raw intelligence into finished, actionable threat profiles |
-| **Threat Hunters** | L4 — SME | Generate and validate hypotheses; discover undiscovered intrusions |
-| **Detection Engineers** | L4 — SME | Codify hunt findings into automated Sigma/YARA/EDR detections |
-| **CTE / Purple Team** | L4 — SME | Emulate adversaries to validate detection coverage and control efficacy |
-| **L3 Senior Analyst** | Operational | Lead incident response; provide tactical intel and hunt leads from live cases |
-| **L1-L2 Triage Analysts** | Operational | Work the alert queue; escalate and feed ground-truth observables upstream |
-| **Generalist** | Cross-domain | Provide shift coverage across all tiers; act as feedback conduit between functions |
-
-```mermaid
 flowchart TB
 
     subgraph EXTERNAL["External Sources"]
@@ -144,6 +86,24 @@ flowchart TB
     HUNT -. "Coverage confidence\nNew detection artefacts\nEnvironment insights" .-> GENERALIST
     DE -. "Detection documentation\nRule intent & logic" .-> GENERALIST
 ```
+
+---
+
+## SOC Role Relationships
+
+The diagram above maps every **input and output** between operational SOC roles — showing exactly what each function produces and consumes. It adds the **human layer** to the pipeline: who talks to whom, and what they exchange.
+
+> View the interactive version: [`docs/soc-role-diagram.html`](docs/soc-role-diagram.html)
+
+| Role | Layer | Primary Function |
+|---|---|---|
+| **CTI Analysts** | L4 — SME | Convert raw intelligence into finished, actionable threat profiles |
+| **Threat Hunters** | L4 — SME | Generate and validate hypotheses; discover undiscovered intrusions |
+| **Detection Engineers** | L4 — SME | Codify hunt findings into automated Sigma/YARA/EDR detections |
+| **CTE / Purple Team** | L4 — SME | Emulate adversaries to validate detection coverage and control efficacy |
+| **L3 Senior Analyst** | Operational | Lead incident response; provide tactical intel and hunt leads from live cases |
+| **L1-L2 Triage Analysts** | Operational | Work the alert queue; escalate and feed ground-truth observables upstream |
+| **Generalist** | Cross-domain | Provide shift coverage across all tiers; act as feedback conduit between functions |
 
 ### Key Information Flows
 
